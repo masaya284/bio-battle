@@ -1,0 +1,1510 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>生物一問一答バトル</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: 1カラムのスマホアプリ。上に科目タブ、中央に問題カード。色はH-E染色（ヘマトキシリンの青紫・エオシンの桃）から */
+:root{
+  --bg:#f2f1f6; --surface:#ffffff; --sunk:#e8e6f0; --ink:#1d1830; --muted:#625b78; --line:#d9d5e5;
+  --hema:#43308f; --hema-ink:#ffffff; --eosin:#c93a6e; --eosin-soft:#f8e3ec;
+  --ok:#11795c; --ok-soft:#dcf1ea; --ng:#b8432a; --ng-soft:#f8e4de;
+  --f-display:"Dela Gothic One","Hiragino Sans","Yu Gothic",sans-serif;
+  --f-body:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic","Noto Sans JP",sans-serif;
+  --f-num:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --r:14px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#14111d; --surface:#1e1a2a; --sunk:#282337; --ink:#eeebf6; --muted:#a69fbd; --line:#363049;
+  --hema:#a896f0; --hema-ink:#14111d; --eosin:#f27ba7; --eosin-soft:#3a2131;
+  --ok:#43c99e; --ok-soft:#173329; --ng:#f08a6e; --ng-soft:#3a221c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#14111d; --surface:#1e1a2a; --sunk:#282337; --ink:#eeebf6; --muted:#a69fbd; --line:#363049;
+  --hema:#a896f0; --hema-ink:#14111d; --eosin:#f27ba7; --eosin-soft:#3a2131;
+  --ok:#43c99e; --ok-soft:#173329; --ng:#f08a6e; --ng-soft:#3a221c; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.65;-webkit-tap-highlight-color:transparent}
+.wrap{max-width:600px;margin:0 auto;padding-inline:16px;padding-block:12px 48px}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--eosin);outline-offset:2px}
+.top{display:flex;flex-direction:column;gap:12px;padding-block:8px 16px}
+.brand{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.brand h1{font-family:var(--f-display);font-weight:400;font-size:1.45rem;margin:0;letter-spacing:.02em;line-height:1.2}
+.brand h1 b{color:var(--eosin);font-weight:400}
+.brand span{font-size:.8rem;color:var(--muted)}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);background:var(--sunk);border-radius:999px;padding:4px;gap:4px}
+.tabs button{border:0;background:transparent;padding:9px 4px;border-radius:999px;font-weight:700;font-size:.95rem;color:var(--muted)}
+.tabs button[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgb(0 0 0 / .12)}
+h2{font-size:.78rem;letter-spacing:.12em;color:var(--muted);margin:0;font-weight:700}
+.stack{display:flex;flex-direction:column;gap:20px}
+.sect{display:flex;flex-direction:column;gap:10px}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fchip{border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 12px;text-align:left;display:flex;flex-direction:column;gap:2px;min-width:0}
+.fchip b{font-size:.95rem;line-height:1.35}
+.fchip small{font-size:.72rem;color:var(--muted)}
+.fchip[aria-pressed="true"]{border-color:var(--hema);background:color-mix(in srgb,var(--hema) 9%,var(--surface))}
+.fchip[aria-pressed="true"] b::before{content:"✓ ";color:var(--hema)}
+.linkrow{display:flex;gap:16px}
+.link{border:0;background:none;color:var(--hema);font-weight:700;font-size:.85rem;padding:2px 0}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{flex:1;min-width:70px;border:1.5px solid var(--line);background:var(--surface);padding:9px 8px;border-radius:10px;font-weight:700;font-size:.92rem}
+.seg button[aria-pressed="true"]{border-color:var(--hema);color:var(--hema);background:color-mix(in srgb,var(--hema) 9%,var(--surface))}
+.primary{border:0;background:var(--hema);color:var(--hema-ink);font-weight:700;font-size:1.05rem;padding:14px;border-radius:var(--r);width:100%}
+.primary:disabled{opacity:.4;cursor:not-allowed}
+.secondary{border:1.5px solid var(--line);background:var(--surface);font-weight:700;padding:12px;border-radius:var(--r);width:100%}
+.ghost{border:0;background:none;color:var(--muted);font-size:.85rem;padding:6px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+.note{font-size:.8rem;color:var(--muted);margin:0}
+/* quiz */
+.qhead{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.tag{font-size:.75rem;font-weight:700;color:var(--hema);background:color-mix(in srgb,var(--hema) 12%,transparent);padding:3px 10px;border-radius:999px}
+.num{font-family:var(--f-num);font-size:.9rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.bar{height:6px;background:var(--sunk);border-radius:6px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--hema);border-radius:6px;transition:width .3s}
+.bar.timer i{background:var(--eosin);transition:none}
+.qtext{font-size:1.12rem;font-weight:500;margin:0;line-height:1.75;text-wrap:pretty}
+.choices{display:flex;flex-direction:column;gap:8px}
+.ch{display:flex;gap:12px;align-items:flex-start;text-align:left;border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:12px 14px;font-size:1rem;line-height:1.5}
+.ch .mk{font-family:var(--f-num);font-weight:600;color:var(--muted);flex:none;width:1.2em}
+.ch span:last-child{min-width:0}
+.ch:not(:disabled):active{transform:scale(.99)}
+.ch:disabled{cursor:default}
+.ch.ok{border-color:var(--ok);background:var(--ok-soft)}
+.ch.ok .mk{color:var(--ok)}
+.ch.ng{border-color:var(--ng);background:var(--ng-soft)}
+.ch.ng .mk{color:var(--ng)}
+.ch.picked{border-color:var(--hema);background:color-mix(in srgb,var(--hema) 10%,var(--surface))}
+.ch.dim{opacity:.55}
+.exp{border-radius:12px;padding:12px 14px;font-size:.92rem;display:flex;flex-direction:column;gap:4px}
+.exp.ok{background:var(--ok-soft)} .exp.ng{background:var(--ng-soft)}
+.exp b{font-size:1rem}
+.exp .crowd{font-size:.75rem;color:var(--muted);border-top:1px solid color-mix(in srgb,var(--ink) 12%,transparent);padding-top:6px;margin-top:4px}
+.exp.ok b{color:var(--ok)} .exp.ng b{color:var(--ng)}
+.big{font-family:var(--f-display);font-size:3.2rem;line-height:1;font-variant-numeric:tabular-nums}
+.big small{font-family:var(--f-body);font-size:1rem;color:var(--muted);margin-left:4px}
+.wrong{display:flex;flex-direction:column;gap:10px}
+.wrong li{list-style:none;border-top:1px solid var(--line);padding-top:10px;font-size:.9rem}
+.wrong ul{margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.wrong .ans{color:var(--ok);font-weight:700}
+/* stats */
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.kpi b{font-family:var(--f-num);font-size:1.35rem;font-variant-numeric:tabular-nums;line-height:1.2}
+.kpi span{font-size:.72rem;color:var(--muted)}
+.frow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;padding:10px 0;border-top:1px solid var(--line)}
+.frow:first-child{border-top:0}
+.frow .nm{font-weight:700;font-size:.92rem}
+.frow .nm small{font-weight:400;color:var(--muted);font-size:.72rem;margin-left:6px}
+.frow .pc{font-family:var(--f-num);font-variant-numeric:tabular-nums;font-weight:600;text-align:right}
+.frow .meter{grid-column:1/-1;height:8px;background:var(--sunk);border-radius:8px;overflow:hidden;display:flex}
+.frow .meter i{display:block;height:100%}
+.frow .meter .a{background:var(--hema)} .frow .meter .b{background:color-mix(in srgb,var(--hema) 30%,var(--sunk))}
+.frow .sub{grid-column:1/-1;font-size:.72rem;color:var(--muted)}
+.pc.low{color:var(--ng)}
+.sync{font-size:.75rem;color:var(--muted);display:flex;align-items:center;gap:6px}
+.sync::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.sync.on::before{background:var(--ok)}
+.confirm{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:.85rem}
+.confirm button{border:1.5px solid var(--line);background:var(--surface);border-radius:10px;padding:8px 12px;font-weight:700}
+.confirm .danger{border-color:var(--ng);color:var(--ng)}
+/* battle */
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:.8rem;font-weight:700;color:var(--muted)}
+input[type=text],input[inputmode]{font:inherit;font-size:1.05rem;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);width:100%;min-width:0}
+.joinrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
+.joinrow button{border:0;background:var(--eosin);color:#fff;font-weight:700;border-radius:12px;padding:0 18px}
+.or{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:.8rem}
+.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
+.codebox{display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--eosin-soft);border-radius:var(--r);padding:14px 18px}
+.codebox span{font-size:.8rem;font-weight:700;color:var(--eosin)}
+.codebox b{font-family:var(--f-num);font-size:2rem;letter-spacing:.18em;color:var(--eosin);font-variant-numeric:tabular-nums}
+.players{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.players li{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:.88rem;font-weight:500}
+.players li.host{border-color:var(--eosin)}
+.players li em{font-style:normal;color:var(--muted);font-size:.75rem;margin-left:4px}
+.waiting{font-size:.88rem;color:var(--muted);text-align:center;padding:8px}
+.rank{margin:0;padding:0;list-style:none;display:flex;flex-direction:column}
+.rank li{display:grid;grid-template-columns:2em minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:9px 0;border-top:1px solid var(--line);font-size:.92rem}
+.rank li:first-child{border-top:0}
+.rank .pos{font-family:var(--f-num);font-weight:600;color:var(--muted)}
+.rank .who{overflow-wrap:anywhere}
+.rank .t{font-family:var(--f-num);font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.rank .pt{font-family:var(--f-num);font-weight:600;font-variant-numeric:tabular-nums;text-align:right;min-width:3.2em}
+.rank .mark{font-weight:700;margin-right:6px}
+.rank .mark.o{color:var(--ok)} .rank .mark.x{color:var(--ng)}
+.rank li.me{background:color-mix(in srgb,var(--hema) 7%,transparent);border-radius:8px}
+.podium .big{color:var(--eosin)}
+.err{color:var(--ng);font-size:.85rem;margin:0}
+.course{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.course button{border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 4px;font-weight:700;font-size:.92rem;display:flex;flex-direction:column;align-items:center;gap:0;line-height:1.3}
+.course button small{font-weight:400;font-size:.7rem;color:var(--muted)}
+.course button[aria-selected="true"]{background:var(--hema);border-color:var(--hema);color:var(--hema-ink)}
+.course button[aria-selected="true"] small{color:inherit;opacity:.8}
+.st{color:var(--eosin);letter-spacing:-.05em;font-size:.8em;margin-left:6px}
+.st .off{color:var(--line)}
+.lvseg button{display:flex;flex-direction:column;align-items:center;line-height:1.35}
+.lvseg button .st{margin-left:0}
+.lvseg button small{font-weight:400;font-size:.7rem;color:var(--muted)}
+.lvkpi{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.lvkpi div{display:flex;flex-direction:column;gap:2px;min-width:0}
+.lvkpi .st{margin-left:0}
+.lvkpi b{font-family:var(--f-num);font-size:1.3rem;font-variant-numeric:tabular-nums}
+.lvkpi b.low{color:var(--ng)}
+.lvkpi span:last-child{font-size:.72rem;color:var(--muted)}
+.qimg{margin:0;border-radius:var(--r);overflow:hidden;background:var(--sunk);display:flex;justify-content:center}
+.qimg img{display:block;max-width:100%;max-height:52vh;object-fit:contain}
+.drop{display:flex;align-items:center;justify-content:center;min-height:160px;border:2px dashed var(--line);border-radius:var(--r);background:var(--sunk);cursor:pointer;overflow:hidden;color:var(--hema);font-weight:700}
+.drop img{display:block;max-width:100%;max-height:300px;object-fit:contain}
+textarea{font:inherit;font-size:1rem;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);width:100%;resize:vertical}
+.field input + input{margin-top:6px}
+.phlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.phlist li{display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:10px;align-items:center}
+.phlist img{width:56px;height:56px;object-fit:cover;border-radius:10px;background:var(--sunk)}
+.phlist b{display:block;font-size:.95rem}
+.phlist small{display:block;font-size:.72rem;color:var(--muted);overflow-wrap:anywhere}
+.thumb{width:72px;height:72px;object-fit:cover;border-radius:10px;float:right;margin-left:10px}
+.oni{display:inline-block;font-family:var(--f-display);font-size:.85em;color:#fff;background:#8f1d2c;border-radius:4px;padding:0 4px;letter-spacing:0;line-height:1.35}
+.lvseg button.lv-oni[aria-pressed="true"]{border-color:#8f1d2c;color:#8f1d2c;background:color-mix(in srgb,#8f1d2c 10%,var(--surface))}
+.oni-mode .brand h1 b{color:#b3263a}
+.brand h1 b{cursor:default;-webkit-user-select:none;user-select:none}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom, 0px));transform:translateX(-50%);max-width:calc(100% - 32px);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:12px;font-weight:700;font-size:.9rem;box-shadow:0 6px 24px rgb(0 0 0 / .25);transition:opacity .4s,transform .4s;z-index:10;text-align:center}
+.toast.oni{background:#8f1d2c;color:#fff}
+.toast.out{opacity:0;transform:translateX(-50%) translateY(8px)}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+
+<script>
+/* Firebaseの設定（Bio-battleapp） */
+window.FIREBASE_CONFIG = {
+  apiKey: "AIzaSyAD2f6bITXyd1D6IGX9qtp0ldEskWPHfKU",
+  authDomain: "bio-battleapp.firebaseapp.com",
+  databaseURL: "https://bio-battleapp-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "bio-battleapp",
+  storageBucket: "bio-battleapp.firebasestorage.app",
+  messagingSenderId: "698934410084",
+  appId: "1:698934410084:web:e641a9ea2e922364395871"
+};
+</script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+/* 独立サイト版：claude.ai のページ機能（room / db / user / assets）を Firebase で置き換える */
+(function () {
+  const cfg = window.FIREBASE_CONFIG;
+  if (!cfg || !cfg.apiKey || String(cfg.apiKey).includes('ここに') || !window.firebase) {
+    window.APP_ENV = 'site-offline';
+    window.claude = {use: async () => null};
+    return;
+  }
+  window.APP_ENV = 'site';
+  firebase.initializeApp(cfg);
+  const auth = firebase.auth(), rdb = firebase.database();
+  const TS = firebase.database.ServerValue.TIMESTAMP;
+  const ready = Promise.race([
+    new Promise(res => {
+      auth.onAuthStateChanged(u => { if (u) res(u); });
+      auth.signInAnonymously().catch(e => { console.warn('匿名ログインに失敗', e); res(null); });
+    }),
+    new Promise(res => setTimeout(() => res(null), 10000))
+  ]);
+  const uid = async () => { const u = await ready; return u ? u.uid : null; };
+  const rand = n => Array.from(crypto.getRandomValues(new Uint8Array(n)), b => 'abcdefghijkmnpqrstuvwxyz23456789'[b % 32]).join('');
+
+  /* ---- 接続状態 ---- */
+  let connected = false;
+  const connHs = new Set();
+  rdb.ref('.info/connected').on('value', s => { connected = !!s.val(); for (const h of connHs) h(connected); });
+
+  /* ---- db ---- */
+  const LSK = 'bio-site-userdoc';
+  function userDoc() { // 個人の記録はこのブラウザに保存（サーバーには送らない）
+    return {
+      id: 'stats',
+      async get() { let v = null; try { v = JSON.parse(localStorage.getItem(LSK)); } catch (e) {} return {id: 'stats', exists: !!v, data: () => v || undefined, metadata: {}}; },
+      async set(d) { try { localStorage.setItem(LSK, JSON.stringify(d)); } catch (e) {} },
+      async update(d) { const s = await this.get(); await this.set(Object.assign({}, s.data() || {}, d)); },
+      async delete() { try { localStorage.removeItem(LSK); } catch (e) {} }
+    };
+  }
+  const docsOf = val => Object.entries(val || {}).map(([id, x]) => ({id, exists: true, data: () => x, metadata: {}}));
+  function coll(path) {
+    if (/^data\/users\/[^/]+$/.test(path)) return {doc: () => userDoc(), onSnapshot: (n) => { setTimeout(() => n({docs: [], size: 0, empty: true}), 0); return () => {}; }};
+    if (path !== 'photoq' && path !== 'agg') throw new Error('unknown collection ' + path);
+    const ref = rdb.ref(path);
+    return {
+      onSnapshot(next, err) {
+        const cb = s => { const docs = docsOf(s.val()); next({docs, size: docs.length, empty: !docs.length, metadata: {}}); };
+        ref.on('value', cb, e => err && err({code: 'upstream_error', message: String(e)}));
+        return () => ref.off('value', cb);
+      },
+      async add(data) { const r = ref.push(); await r.set(data); return {id: r.key}; },
+      doc(id) {
+        const r = ref.child(id);
+        return {
+          id,
+          async get() { const s = await r.once('value'); return {id, exists: s.exists(), data: () => s.val() || undefined, metadata: {}}; },
+          async set(d) { await r.set(d); },
+          async update(d) { await r.update(d); },
+          async delete() { await r.remove(); }
+        };
+      }
+    };
+  }
+  const db = Object.freeze({collection: coll});
+
+  /* ---- 写真（assets）：画像はデータURLとして blobs/<id> に保存 ---- */
+  const cache = {}, loading = {};
+  const BLANK = 'data:image/gif;base64,R0lGODlhAQABAAAAACw=';
+  function loadBlob(id) {
+    if (cache[id] || loading[id]) return;
+    loading[id] = rdb.ref('blobs/' + id).once('value').then(s => {
+      const v = s.val();
+      if (typeof v === 'string' && v.startsWith('data:image/')) {
+        cache[id] = v;
+        document.querySelectorAll('img[data-blob="' + id + '"]').forEach(img => { img.src = v; });
+      }
+    }).catch(() => {}).finally(() => { delete loading[id]; });
+  }
+  window.BLOB = {src: id => { if (cache[id]) return cache[id]; loadBlob(id); return BLANK; }};
+  new MutationObserver(() => {
+    document.querySelectorAll('img[data-blob]').forEach(img => {
+      const id = img.dataset.blob;
+      if (cache[id]) { if (img.src !== cache[id]) img.src = cache[id]; } else loadBlob(id);
+    });
+  }).observe(document.documentElement, {childList: true, subtree: true});
+  async function toDataURL(blob) {
+    try {
+      const bmp = await createImageBitmap(blob);
+      const s = Math.min(1, 960 / Math.max(bmp.width, bmp.height));
+      const c = document.createElement('canvas'); c.width = Math.round(bmp.width * s); c.height = Math.round(bmp.height * s);
+      c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+      return c.toDataURL('image/jpeg', 0.78);
+    } catch (e) { throw {code: 'unsupported_type', message: '画像を読み込めません'}; }
+  }
+  const assets = Object.freeze({
+    async upload(blob) {
+      const url = await toDataURL(blob);
+      if (url.length > 390000) throw {code: 'too_large', message: '画像が大きすぎます'};
+      const id = Array.from(crypto.getRandomValues(new Uint8Array(16)), b => b.toString(16).padStart(2, '0')).join('');
+      await rdb.ref('blobs/' + id).set(url).catch(e => { throw {code: 'not_granted', message: String(e)}; });
+      cache[id] = url;
+      return {id, url, sizeBytes: url.length, contentType: 'image/jpeg'};
+    },
+    async delete(id) { await rdb.ref('blobs/' + id).remove(); delete cache[id]; },
+    async list() { return {assets: [], usage: {}}; }
+  });
+  async function isAdmin() {
+    const id = await uid(); if (!id) return false;
+    try { return (await rdb.ref('admins/' + id).once('value')).exists(); } catch (e) { return false; }
+  }
+
+  /* ---- user ---- */
+  const user = Object.freeze({
+    id: uid,
+    me: async () => ({id: await uid(), name: '', guest: false}),
+    isOwner: async () => false,
+    canEdit: async () => isAdmin(),
+    can: async () => null,
+    profiles: async ids => Object.fromEntries((ids || []).map(i => [i, {id: i, name: ''}]))
+  });
+
+  /* ---- room：rooms/<名前>/peers/<ピア>/{p: presence, by: uid, t} ---- */
+  function makeRoom(name, myUid) {
+    const myPeer = rand(16);
+    const ref = rdb.ref('rooms/' + name + '/peers'), me = ref.child(myPeer);
+    let pres = {}, peers = Object.freeze([]), prev = new Map(), alive = true;
+    const hs = new Set();
+    const write = () => { me.onDisconnect().remove(); return me.set({p: pres, by: myUid, t: TS}); };
+    const onVal = s => {
+      const val = s.val() || {}, now = Date.now(), map = new Map(), joined = [], updated = [], left = [], list = [];
+      for (const [pid, x] of Object.entries(val)) {
+        if (!x || typeof x !== 'object') continue;
+        const j = JSON.stringify(x.p || {}), old = prev.get(pid);
+        let peer = old;
+        if (!old || old._j !== j) {
+          peer = Object.freeze({peer: pid, by: x.by || null, isMe: x.by === myUid, sameTab: pid === myPeer, kind: 'viewer', guest: false,
+            presence: Object.freeze(x.p || {}), updatedAt: now, _j: j});
+          (old ? updated : joined).push(peer);
+        }
+        map.set(pid, peer); list.push(peer);
+      }
+      for (const [pid, p] of prev) if (!map.has(pid)) left.push(p);
+      prev = map; peers = Object.freeze(list);
+      for (const h of hs) { try { h({peers, joined, left, updated}); } catch (e) { console.error(e); } }
+    };
+    const onConn = c => { if (c && alive) write().catch(() => {}); };
+    return {
+      name,
+      async _init() { await write(); ref.on('value', onVal); connHs.add(onConn); },
+      async presence(patch) {
+        if (!alive) throw {code: 'invalid_argument', message: 'left'};
+        const nextP = Object.assign({}, pres);
+        for (const [k, v] of Object.entries(patch || {})) { if (v === null) delete nextP[k]; else nextP[k] = v; }
+        if (new Blob([JSON.stringify(nextP)]).size > 4096) throw {code: 'invalid_argument', message: 'presence too large'};
+        pres = nextP;
+        await write();
+      },
+      peers: () => peers,
+      onPeers(h) { hs.add(h); setTimeout(() => { if (hs.has(h)) h({peers, joined: peers, left: [], updated: []}); }, 0); return () => hs.delete(h); },
+      connected: () => connected,
+      onConnection(h) { connHs.add(h); setTimeout(() => h(connected), 0); return () => connHs.delete(h); },
+      emit: async () => {},
+      on: () => () => {},
+      async leave() {
+        if (!alive) return; alive = false;
+        ref.off('value', onVal); connHs.delete(onConn); hs.clear();
+        try { await me.onDisconnect().cancel(); await me.remove(); } catch (e) {}
+      }
+    };
+  }
+  const joined = new Map();
+  const room = Object.freeze({
+    async join(name) {
+      if (!/^[a-z0-9][a-z0-9_.-]{0,47}$/.test(name)) throw {code: 'invalid_argument', message: 'room name'};
+      const id = await uid(); if (!id) throw {code: 'not_permitted', message: 'サーバーにログインできません'};
+      if (joined.has(name)) return joined.get(name);
+      const r = makeRoom(name, id);
+      try { await r._init(); } catch (e) { throw {code: 'upstream_error', message: String(e)}; }
+      const leave = r.leave; r.leave = async () => { joined.delete(name); await leave(); };
+      joined.set(name, r);
+      return r;
+    },
+    connected: () => connected
+  });
+
+  window.claude = {
+    use: async name => {
+      if (name === 'db') return db;
+      if (name === 'user') return user;
+      if (name === 'room') return room;
+      if (name === 'assets') return (await isAdmin()) ? assets : null;
+      return null;
+    }
+  };
+})();
+
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><h1>生物<b>一問一答</b>バトル</h1><span>入試編・岡大志望編・雑学編</span></div>
+    <nav class="tabs" role="tablist">
+      <button role="tab" data-tab="practice" aria-selected="true">練習</button>
+      <button role="tab" data-tab="stats" aria-selected="false">記録</button>
+      <button role="tab" data-tab="battle" aria-selected="false">対戦</button>
+    </nav>
+  </header>
+  <main id="view"></main>
+</div>
+
+<script>
+// 分野: k=キー, n=名前, c=科目
+// 編: g=編キー
+const COURSES = [
+  {k:'exam', n:'入試編', d:'大学入試レベル・生物基礎／生物'},
+  {k:'oka',  n:'岡大志望編', d:'二次試験を意識した考察・計算と、岡大と岡山の生物'},
+  {k:'zatsu',n:'雑学編', d:'話したくなる生き物とからだの雑学'}
+];
+const FIELDS = [
+  {k:'cell', g:'exam', n:'細胞と分子', c:'生物'},
+  {k:'meta', g:'exam', n:'代謝', c:'生物'},
+  {k:'gene', g:'exam', n:'遺伝情報の発現', c:'生物'},
+  {k:'dev',  g:'exam', n:'生殖・遺伝・発生', c:'生物'},
+  {k:'body', g:'exam', n:'体内環境・免疫', c:'生物基礎'},
+  {k:'neur', g:'exam', n:'動物の反応と行動', c:'生物'},
+  {k:'plnt', g:'exam', n:'植物の環境応答', c:'生物'},
+  {k:'eco',  g:'exam', n:'生態と環境', c:'生物基礎・生物'},
+  {k:'evo',  g:'exam', n:'進化と系統', c:'生物'},
+  {k:'oexp', g:'oka',  n:'考察・計算', c:'二次試験対策'},
+  {k:'olab', g:'oka',  n:'岡大と岡山の生物', c:'教養'},
+  {k:'zbod', g:'zatsu',n:'ヒトのからだ', c:'雑学'},
+  {k:'zani', g:'zatsu',n:'動物', c:'雑学'},
+  {k:'zpla', g:'zatsu',n:'植物・微生物', c:'雑学'},
+  {k:'zpho', g:'zatsu',n:'写真で当てる', c:'みんなの写真'}
+];
+// 入試編の難易度（1=基礎 2=標準 3=発展）。各分野の問題順に1桁ずつ
+const LV = {
+  cell:'112122223123', meta:'1121222223222', gene:'1221112312223', dev:'1211222231322',
+  body:'21121112121111', neur:'1111222211123', plnt:'2221212213322', eco:'1221212111123', evo:'3221222132212'
+};
+// [問題, [正解, 誤1, 誤2, 誤3], 解説]  ※選択肢の先頭が正解（表示時にシャッフル）
+const RAW = {
+cell: [
+ ['原核細胞がもたない構造はどれか。', ['核膜','リボソーム','細胞膜','DNA'], '原核細胞は核膜で囲まれた核をもたないが、DNA・リボソーム・細胞膜はもつ。'],
+ ['呼吸の電子伝達系が存在する場所はどこか。', ['ミトコンドリア内膜','ミトコンドリア外膜','マトリックス','細胞質基質'], '電子伝達系とATP合成酵素はミトコンドリア内膜（クリステ）にある。マトリックスではクエン酸回路が進む。'],
+ ['ATPを使い、Na⁺を細胞外へ、K⁺を細胞内へ濃度勾配に逆らって輸送するものはどれか。', ['ナトリウムポンプ','アクアポリン','カリウムチャネル','グルコース輸送体'], 'ナトリウムポンプ（Na⁺-K⁺-ATPアーゼ）による能動輸送。チャネルや輸送体による受動輸送は濃度勾配に従う。'],
+ ['水分子を選択的に通過させる膜タンパク質はどれか。', ['アクアポリン','ナトリウムポンプ','インテグリン','カドヘリン'], 'アクアポリンは水チャネル。腎臓の集合管などで水の再吸収に関わる。'],
+ ['べん毛・繊毛の軸や紡錘体を構成する細胞骨格はどれか。', ['微小管','アクチンフィラメント','中間径フィラメント','ミオシンフィラメント'], '微小管はチューブリンからなり、紡錘体・べん毛・繊毛のほか、モータータンパク質による小胞輸送のレールにもなる。'],
+ ['動物細胞の細胞質分裂で、くびれをつくる収縮環を構成するものはどれか。', ['アクチンフィラメント','微小管','中間径フィラメント','セルロース繊維'], '収縮環はアクチンフィラメントとミオシンからなる。植物細胞では細胞板が形成される。'],
+ ['αヘリックスやβシートのような、ポリペプチド鎖の部分的な立体構造を何というか。', ['二次構造','一次構造','三次構造','四次構造'], '一次構造はアミノ酸配列、三次構造は1本の鎖全体の立体構造、四次構造は複数のサブユニットの集合。'],
+ ['一連の反応の最終産物が、反応系の初期段階の酵素の働きを抑える調節を何というか。', ['フィードバック調節','競争的阻害','基質特異性','失活'], '最終産物がアロステリック酵素に結合して活性を下げる例が多い。産物が過剰にならないよう調節される。'],
+ ['酵素の競争的阻害について正しいものはどれか。', ['基質濃度を十分に高くすると阻害の影響は小さくなる','阻害物質は活性部位以外の部位に結合する','基質濃度をどれだけ高めても最大反応速度は低下したままになる','阻害物質は酵素を不可逆的に変性させる'], '競争的阻害では阻害物質が基質と活性部位を奪い合う。基質濃度が高いほど基質が勝ちやすい。'],
+ ['細胞周期でDNAの複製が行われる時期はどれか。', ['S期','G₁期','G₂期','M期'], 'G₁期（DNA合成準備期）→S期（DNA合成期）→G₂期（分裂準備期）→M期（分裂期）。'],
+ ['分泌タンパク質が細胞外へ出るまでの経路として正しいものはどれか。', ['粗面小胞体→ゴルジ体→分泌小胞→細胞膜','ゴルジ体→粗面小胞体→リソソーム→細胞膜','滑面小胞体→核→ゴルジ体→細胞膜','リボソーム→ミトコンドリア→ゴルジ体→細胞膜'], '粗面小胞体のリボソームで合成されたタンパク質は、ゴルジ体で修飾・濃縮され、分泌小胞がエキソサイトーシスで放出する。'],
+ ['上皮細胞どうしを隙間なく結合させ、物質が細胞間を通り抜けるのを防ぐ細胞接着はどれか。', ['密着結合','ギャップ結合','接着結合','デスモソーム'], 'ギャップ結合は隣の細胞と小さな分子を通す結合。接着結合・デスモソームはカドヘリンによる機械的結合。'],
+ ['タンパク質の助けを借りずに脂質二重層を透過しやすい順に並べたものとして最も適当なものはどれか。', ['O₂ ＞ H₂O ＞ グルコース ＞ Na⁺','H₂O ＞ O₂ ＞ Na⁺ ＞ グルコース','Na⁺ ＞ グルコース ＞ H₂O ＞ O₂','グルコース ＞ O₂ ＞ Na⁺ ＞ H₂O'], '小さな無極性分子ほど通りやすく、小さな極性分子（水）はわずかに、大きな極性分子（グルコース）はほとんど、イオンは電荷のためほぼ通らない。', 4],
+ ['ある阻害剤を加えると、ミカエリス定数Kmは大きくなったが最大反応速度Vmaxは変わらなかった。阻害の様式として最も適当なものはどれか。', ['競争的阻害','非競争的阻害','不競争的阻害','不可逆的阻害'], '基質と活性部位を奪い合うため見かけの親和性（1/Km）が下がるが、基質を十分に増やせばVmaxに達する。非競争的阻害はVmaxが下がりKmは変わらない。', 4],
+ ['二重膜で囲まれている細胞小器官はどれか。', ['ミトコンドリア','ゴルジ体','リソソーム','小胞体'], '核・ミトコンドリア・葉緑体は二重膜をもつ。ミトコンドリアと葉緑体は独自のDNAをもち、細胞内共生の根拠とされる。', 1],
+ ['加水分解酵素を含み、細胞内に取り込んだ物質や不要になった細胞小器官を分解する構造はどれか。', ['リソソーム','リボソーム','中心体','液胞膜'], 'リソソームの内部は酸性に保たれ、多くの加水分解酵素が働く。', 1],
+ ['細胞が自分の細胞質の一部を膜で包み、リソソームで分解して再利用するしくみを何というか。', ['オートファジー','アポトーシス','エキソサイトーシス','ファゴサイトーシス'], '大隅良典が酵母を使ってしくみを解明し、2016年にノーベル生理学・医学賞を受賞した。', 2],
+ ['ヒトの赤血球を蒸留水に入れたときに起こる変化はどれか。', ['吸水してふくらみ、破裂する','水を失って縮む','変化しない','核が膨張して分裂する'], '蒸留水は赤血球の内液より低張なので、浸透によって水が入る。赤血球が壊れる現象を溶血という。', 1],
+ ['植物細胞を高張液に浸したときに見られる現象はどれか。', ['細胞膜が細胞壁から離れる（原形質分離）','細胞壁が破れる','細胞が吸水して破裂する','細胞壁が溶ける'], '液胞から水が出て細胞質が縮む。細胞壁は全透性で丈夫なので形はほとんど変わらない。', 1],
+ ['胃液に含まれるペプシンの最適pHに最も近いものはどれか。', ['約2','約7','約8','約11'], '胃の中は塩酸で強い酸性になっている。すい液のトリプシンの最適pHは約8。', 2],
+ ['ある酵素液を透析すると活性がなくなったが、透析外液を加えると活性が戻った。透析外液に含まれていた物質として最も適当なものはどれか。', ['補酵素','酵素タンパク質','基質','阻害物質'], '補酵素は低分子なので透析膜を通って外に出る。酵素タンパク質は大きいため膜内に残る。', 3],
+ ['細胞膜が物質を包み込んで小胞をつくり、細胞内に取り込むはたらきを何というか。', ['エンドサイトーシス','エキソサイトーシス','能動輸送','拡散'], '逆に、小胞が細胞膜と融合して物質を外へ出すはたらきをエキソサイトーシスという。', 1],
+ ['ステロイドホルモンの受容体が存在する場所として最も適当なものはどれか。', ['細胞内（細胞質や核）','細胞膜の外側の糖鎖','細胞壁','細胞外の基質'], 'ステロイドホルモンは脂溶性で細胞膜を通過する。受容体と結合した複合体が転写調節因子として働く。', 3],
+ ['細胞膜の受容体にホルモンが結合したとき、細胞内で情報を伝えるセカンドメッセンジャーとして働く物質の例はどれか。', ['cAMP（サイクリックAMP）','ATP合成酵素','DNAポリメラーゼ','ヘモグロビン'], 'アドレナリンやグルカゴンでは、受容体→Gタンパク質→アデニル酸シクラーゼの順に働き、cAMPがつくられる。', 3],
+ ['ヒトの赤血球の直径はおよそどれくらいか。', ['約7〜8μm','約0.7mm','約70nm','約70μm'], '大腸菌の長さは約2〜3μm、ヒトの卵の直径は約0.14mm。', 2],
+ ['光学顕微鏡で見分けられる2点間の最小距離（分解能）はおよそどれくらいか。', ['約0.2μm','約0.2nm','約2mm','約20μm'], '光の波長による限界。電子顕微鏡の分解能は約0.2nm。', 2],
+],
+meta: [
+ ['呼吸の解糖系が進む場所はどこか。', ['細胞質基質','ミトコンドリアのマトリックス','ミトコンドリア内膜','葉緑体のストロマ'], '解糖系は細胞質基質、クエン酸回路はマトリックス、電子伝達系は内膜で進む。'],
+ ['クエン酸回路が進む場所はどこか。', ['ミトコンドリアのマトリックス','ミトコンドリア内膜','細胞質基質','チラコイド'], 'ピルビン酸はマトリックスに入りアセチルCoAとなってクエン酸回路に入る。'],
+ ['グルコース1分子を好気呼吸で完全に分解したときに得られるATPは最大何分子とされるか（高校教科書の値）。', ['38分子','2分子','12分子','64分子'], '解糖系2＋クエン酸回路2＋電子伝達系最大34＝最大38分子。発酵では2分子のみ。'],
+ ['酵母のアルコール発酵で生じる物質の組み合わせはどれか。', ['エタノールと二酸化炭素','乳酸のみ','乳酸と二酸化炭素','エタノールと酸素'], 'ピルビン酸が脱炭酸されてアセトアルデヒドとなり、NADHで還元されてエタノールになる。'],
+ ['脂肪を呼吸基質としたときの呼吸商（RQ）はおよそいくらか。', ['0.7','1.0','0.8','1.3'], '呼吸商＝放出CO₂/吸収O₂。炭水化物 約1.0、タンパク質 約0.8、脂肪 約0.7。'],
+ ['光合成でチラコイド膜上の反応によってつくられるものの組み合わせはどれか。', ['ATPとNADPH','グルコースとO₂','PGAとRuBP','NADHとFADH₂'], 'チラコイドでは光化学系で水が分解されO₂が生じ、ATPとNADPHが合成される。これらはカルビン回路で使われる。'],
+ ['カルビン回路でCO₂をRuBPに固定する酵素はどれか。', ['ルビスコ','ATP合成酵素','PEPカルボキシラーゼ','ニトロゲナーゼ'], 'ルビスコ（RuBPカルボキシラーゼ/オキシゲナーゼ）は地球上で最も多いタンパク質とも言われる。'],
+ ['C₃植物のカルビン回路で、CO₂が固定されて最初にできる物質はどれか。', ['PGA（ホスホグリセリン酸）','オキサロ酢酸','RuBP','グルコース'], 'CO₂＋RuBP（C₅）→ PGA（C₃）2分子。C₄植物ではまずオキサロ酢酸（C₄）ができる。'],
+ ['C₄植物はどれか。', ['トウモロコシ','イネ','コムギ','ダイズ'], 'トウモロコシ・サトウキビなどがC₄植物。高温・強光下でCO₂を効率よく固定できる。'],
+ ['CAM植物の特徴として正しいものはどれか。', ['夜間に気孔を開いてCO₂を取り込み、リンゴ酸などとして蓄える','昼間だけ気孔を開いてCO₂を直接カルビン回路に取り込む','維管束鞘細胞でのみ光合成を行う','光がなくても化学エネルギーで炭酸同化を行う'], 'ベンケイソウ・サボテンなど乾燥地の植物。昼は気孔を閉じて水の損失を防ぐ。'],
+ ['光合成で発生する酸素はどの物質に由来するか。', ['水','二酸化炭素','グルコース','RuBP'], 'ルーベンらが酸素の同位体¹⁸Oを用いて、発生するO₂が水に由来することを示した。'],
+ ['根粒菌などが大気中のN₂をアンモニウムイオンに変える働きを何というか。', ['窒素固定','窒素同化','硝化','脱窒'], '窒素固定はニトロゲナーゼによる。窒素同化は無機窒素から有機窒素化合物をつくる働き。'],
+ ['亜硝酸菌・硝酸菌のように、無機物の酸化で得たエネルギーで炭酸同化を行う生物を何というか。', ['化学合成細菌','光合成細菌','従属栄養生物','シアノバクテリア'], '亜硝酸菌はNH₄⁺→NO₂⁻、硝酸菌はNO₂⁻→NO₃⁻の酸化でエネルギーを得る。'],
+ ['光合成を行っている葉に当てていた光を急に遮断した直後、カルビン回路のRuBPとPGAの量はどう変化するか。', ['RuBPは減少し、PGAは増加する','RuBPは増加し、PGAは減少する','どちらも増加する','どちらも減少する'], 'ATPとNADPHが供給されなくなりPGA→GAPの還元が止まるのでPGAがたまる。一方RuBPの再生も止まるが、CO₂固定でRuBPは消費され続けるので減る。', 4],
+ ['光合成を行っている葉の周りのCO₂濃度を急に下げた直後、RuBPとPGAの量はどう変化するか。', ['RuBPは増加し、PGAは減少する','RuBPは減少し、PGAは増加する','どちらも増加する','どちらも変化しない'], 'CO₂固定（RuBP→PGA）が遅くなる一方、光反応は続くのでPGAは消費されRuBPは再生され続ける。光を止めた場合と逆の変化になる。', 4],
+ ['単離したミトコンドリアに、内膜をH⁺が自由に通れるようにする脱共役剤を加えた。このときの変化として最も適当なものはどれか。', ['酸素消費は続く（むしろ増える）が、ATP合成は大きく低下する','酸素消費もATP合成も停止する','酸素消費は止まるが、ATP合成は続く','どちらも変化しない'], 'H⁺の濃度勾配が解消されてATP合成酵素が働けなくなる。電子伝達はブレーキ（勾配）がなくなるため速く進み、エネルギーは熱になる。', 4],
+ ['単離したミトコンドリアに基質とADPを与えて呼吸させ、ATP合成酵素の阻害剤（オリゴマイシン）を加えた。酸素消費速度はどうなるか。', ['低下する','上昇する','変化しない','いったん停止した後、元の2倍になる'], 'H⁺が戻る道がふさがれて内膜の内外のH⁺勾配が大きくなりすぎ、電子伝達が進みにくくなる（呼吸調節）。脱共役剤を加えると再び酸素消費が回復する。', 4],
+ ['ATP1分子に含まれる高エネルギーリン酸結合の数はいくつか。', ['2','1','3','4'], 'アデニン・リボース・3つのリン酸からなり、リン酸どうしの結合2か所が高エネルギーリン酸結合。', 1],
+ ['呼吸の電子伝達系で、最終的に電子を受け取る物質はどれか。', ['酸素','二酸化炭素','NAD⁺','ピルビン酸'], '電子とH⁺が酸素に渡されて水ができる。酸素がないと電子伝達系は止まる。', 1],
+ ['激しい運動で酸素が不足した骨格筋で、グルコースの分解によって蓄積する物質はどれか。', ['乳酸','エタノール','尿素','クエン酸'], '解糖でできたピルビン酸がNADHで還元されて乳酸になる。乳酸発酵と同じ反応。', 1],
+ ['ある種子の呼吸で、O₂吸収量が10mL、CO₂放出量が7mLだった。呼吸商と、主な呼吸基質の組み合わせとして最も適当なものはどれか。', ['0.7・脂肪','1.4・炭水化物','0.7・炭水化物','1.0・タンパク質'], '呼吸商＝CO₂/O₂＝7/10＝0.7。脂肪はCに対するOの割合が小さく、多くのO₂を必要とする。', 2],
+ ['緑葉の色素を薄層クロマトグラフィーで分離したとき、最も上（原点から遠く）まで移動する色素はどれか。', ['カロテン','クロロフィルa','クロロフィルb','キサントフィル'], '展開液に溶けやすくシートに吸着されにくいものほど遠くまで移動する。黄橙色のカロテンが最も上に来る。', 2],
+ ['クロロフィルがよく吸収する光の組み合わせはどれか。', ['青紫色光と赤色光','緑色光と黄色光','赤外線と紫外線','緑色光のみ'], '緑色光はあまり吸収されず反射・透過するので、葉は緑色に見える。', 1],
+ ['緑色硫黄細菌が光合成で電子の供給源（還元剤）として使う物質はどれか。', ['硫化水素','水','酸素','二酸化炭素'], '水の代わりに硫化水素を使うため酸素を発生しない。代わりに硫黄が生じる。', 2],
+ ['光合成の電子の流れとして正しいものはどれか。', ['水→光化学系Ⅱ→光化学系Ⅰ→NADP⁺','水→光化学系Ⅰ→光化学系Ⅱ→NADP⁺','NADPH→光化学系Ⅰ→光化学系Ⅱ→水','CO₂→光化学系Ⅱ→光化学系Ⅰ→O₂'], '光化学系Ⅱで水から電子が引き抜かれ、電子伝達系を経て光化学系Ⅰに渡り、最後にNADP⁺を還元する。', 2],
+ ['ミトコンドリアや葉緑体でATPを合成するエネルギーとして直接使われるものはどれか。', ['膜を隔てたH⁺の濃度勾配','グルコースの分解熱','光の熱エネルギー','DNAの電気的な力'], 'H⁺がATP合成酵素を通って流れるときにATPができる（化学浸透説）。', 2],
+ ['脂肪を呼吸基質に使うとき、脂肪酸がアセチルCoAに分解される過程を何というか。', ['β酸化','解糖','脱アミノ反応','カルビン回路'], '脂肪はグリセリンと脂肪酸に分解され、脂肪酸はミトコンドリアでβ酸化を受けてクエン酸回路に入る。', 3],
+ ['タンパク質を呼吸基質に使うとき、アミノ酸から生じる有害なアンモニアをヒトはおもにどこで何に変えるか。', ['肝臓で尿素に','腎臓で尿酸に','すい臓でアミノ酸に','肺で窒素ガスに'], 'アミノ酸から外れたアミノ基がアンモニアになり、肝臓のオルニチン回路で毒性の低い尿素に変えられる。', 2],
+],
+gene: [
+ ['メセルソンとスタールの実験で示されたDNAの複製様式はどれか。', ['半保存的複製','保存的複製','分散的複製','逆転写'], '¹⁵Nで標識した大腸菌を¹⁴N培地で培養し、密度勾配遠心法で中間の密度のDNAが現れることを示した。'],
+ ['DNAポリメラーゼがヌクレオチド鎖を伸長する方向はどれか。', ['5′→3′','3′→5′','両方向','鋳型によって変わる'], '新しい鎖の3′末端にヌクレオチドを付加していくため、伸長は常に5′→3′方向。'],
+ ['複製の際、岡崎フラグメントが連結されてつくられる鎖を何というか。', ['ラギング鎖','リーディング鎖','鋳型鎖','センス鎖'], 'ラギング鎖は開裂方向と逆向きに短い断片として合成され、DNAリガーゼで連結される。'],
+ ['真核生物でmRNA前駆体からイントロンが取り除かれる過程を何というか。', ['スプライシング','翻訳','転写','逆転写'], 'エキソンどうしが連結される。選択的スプライシングにより1つの遺伝子から複数種のタンパク質ができる。'],
+ ['コドン（3塩基の組み合わせ）は全部で何通りあるか。', ['64通り','20通り','61通り','16通り'], '4³＝64通り。うち3つは終止コドンで、残り61種がアミノ酸を指定する。'],
+ ['tRNAがもつ、mRNAのコドンと相補的な3塩基の配列を何というか。', ['アンチコドン','プロモーター','オペレーター','開始コドン'], 'tRNAはアンチコドンでコドンと対合し、対応するアミノ酸をリボソームに運ぶ。'],
+ ['大腸菌のラクトースオペロンで、リプレッサーが結合するDNA領域はどれか。', ['オペレーター','プロモーター','調節遺伝子','エンハンサー'], 'リプレッサーがオペレーターに結合するとRNAポリメラーゼがプロモーターから転写を進められない。'],
+ ['ラクトースが存在するとき、ラクトースオペロンの転写が起こる理由として正しいものはどれか。', ['ラクトース由来の物質がリプレッサーに結合し、リプレッサーがオペレーターに結合できなくなるから','ラクトースがRNAポリメラーゼに直接結合して活性化するから','調節遺伝子が欠失するから','リプレッサーがプロモーターに結合するから'], 'ラクトース代謝物が誘導物質としてリプレッサーの構造を変える。これが転写の誘導。'],
+ ['特定の塩基配列を認識してDNAを切断する酵素はどれか。', ['制限酵素','DNAリガーゼ','逆転写酵素','DNAポリメラーゼ'], '制限酵素で切断し、DNAリガーゼで連結して組換えDNAをつくる。'],
+ ['PCR法で用いられる酵素として最も適当なものはどれか。', ['耐熱性DNAポリメラーゼ','制限酵素','DNAリガーゼ','RNAポリメラーゼ'], '約95℃での変性→約55℃でのプライマー結合→約72℃での伸長を繰り返すため、熱に強い酵素を使う。'],
+ ['アガロースゲル電気泳動でのDNA断片の動きとして正しいものはどれか。', ['陽極側へ移動し、短い断片ほど速く移動する','陰極側へ移動し、長い断片ほど速く移動する','陽極側へ移動し、長い断片ほど速く移動する','電荷をもたないので移動しない'], 'DNAはリン酸基により負に帯電している。ゲルの網目のため短いものほど速く動く。'],
+ ['1塩基の置換が起きてもアミノ酸配列が変化しない突然変異を何というか。', ['同義置換','フレームシフト','ナンセンス変異','欠失'], 'コドンの3番目の塩基が変わっても同じアミノ酸を指定することが多い（コドンの縮重）。'],
+ ['真核生物の転写で、RNAポリメラーゼとともにプロモーターに結合し転写を開始させるタンパク質群はどれか。', ['基本転写因子','リプレッサー','DNAリガーゼ','ヒストン'], '真核生物のRNAポリメラーゼは単独ではプロモーターに結合できず、基本転写因子が必要。'],
+ ['大腸菌のラクトースオペロンで、リプレッサーの遺伝子に機能を失う変異（lacI⁻）が起きた株の性質として正しいものはどれか（グルコースは存在しない）。', ['ラクトースの有無に関係なく、酵素が常に合成される','ラクトースがあっても酵素は合成されない','ラクトースがあるときだけ酵素が合成される','ラクトースがないときだけ酵素が合成される'], 'リプレッサーがないのでオペレーターが常に空き、転写が抑えられない（構成的発現）。', 4],
+ ['lacI⁻変異株に、正常なlacI⁺遺伝子をもつプラスミドを導入した。ラクトースがないとき、染色体上のラクトースオペロンの転写はどうなるか。', ['抑制される','常に転写される','プラスミド上のオペロンだけが抑制される','細胞が死ぬ'], 'リプレッサーは細胞質を拡散するタンパク質なので、別のDNA上の遺伝子から作られても働く（トランスに作用）。', 4],
+ ['オペレーターにリプレッサーが結合できなくなる変異（Oᶜ）をもつ株に、正常なオペレーターとリプレッサー遺伝子をもつプラスミドを導入した。ラクトースがないとき、染色体上の変異オペレーターの下流の遺伝子はどうなるか。', ['転写され続ける','抑制される','プラスミドとの組換えで必ず正常に戻る','翻訳だけが抑制される'], 'オペレーターはすぐ下流の遺伝子だけを調節するDNA配列なので、別のDNAで補うことはできない（シスに作用）。', 4],
+ ['エキソン3個・イントロン2個からなる真核生物の遺伝子の1本鎖DNAと、その成熟mRNAを相補的に結合させて電子顕微鏡で観察した。1本鎖のまま飛び出したループはいくつ見えるか。', ['2個','3個','1個','5個'], '成熟mRNAにはイントロンに対応する配列がないため、DNA側のイントロン部分がループとして飛び出す。', 4],
+ ['ある遺伝子の翻訳領域の途中で、連続する3塩基が欠失した。一般に起こる変化として最も適当なものはどれか。', ['1個のアミノ酸がなくなる（前後の1個が置き換わることもある）が、それ以降の読み枠は変わらない','欠失した位置より後ろのアミノ酸配列がすべて変わる','必ず終止コドンが生じる','タンパク質は全く合成されなくなる'], '3の倍数の欠失ではフレームシフトが起こらない。欠失がコドンの境目にまたがると、隣のアミノ酸1個も変わる。', 4],
+ ['DNAのヌクレオチドを構成するものの組み合わせはどれか。', ['リン酸・デオキシリボース・塩基','リン酸・リボース・塩基','アミノ酸・糖・塩基','脂肪酸・グリセリン・リン酸'], 'RNAは糖がリボースで、塩基のTの代わりにUをもつ。', 1],
+ ['RNAに含まれ、DNAには含まれない塩基はどれか。', ['ウラシル','チミン','アデニン','シトシン'], 'RNAの塩基はA・U・G・Cの4種類。', 1],
+ ['DNAの二重らせん構造のモデルを提唱したのは誰か。', ['ワトソンとクリック','メンデル','ハーシーとチェイス','メセルソンとスタール'], '1953年に発表。ウィルキンスとフランクリンによるX線回折像が手がかりになった。', 1],
+ ['エイブリーらが肺炎球菌（肺炎双球菌）の実験で、形質転換を起こす物質として示したものはどれか。', ['DNA','タンパク質','多糖類','RNA'], 'S型菌の抽出液をDNA分解酵素で処理すると、R型菌がS型菌に変わる形質転換が起こらなくなった。', 2],
+ ['ハーシーとチェイスの実験で、T₂ファージが大腸菌に感染したとき菌の中に入ったものはどれか。', ['³²Pで標識したDNA','³⁵Sで標識したタンパク質','ファージ全体','タンパク質とDNAの両方'], '菌内に入ったDNAから子ファージがつくられたことから、遺伝子の本体がDNAであると結論づけた。', 2],
+ ['DNAの鋳型鎖の塩基配列が 3′-TAC-5′ のとき、転写されるmRNAの配列はどれか。', ['5′-AUG-3′','5′-UAC-3′','3′-AUG-5′','5′-ATG-3′'], '鋳型鎖に相補的で逆向きの鎖ができる。T→A、A→U、C→Gとなる。AUGは開始コドン。', 2],
+ ['ニーレンバーグらが、Uだけからなる人工RNAを使って合成したポリペプチドを構成するアミノ酸はどれか。', ['フェニルアラニン','メチオニン','グリシン','リシン'], 'UUUがフェニルアラニンを指定することがわかり、遺伝暗号の解読が始まった。', 2],
+ ['RNAポリメラーゼとDNAポリメラーゼの違いとして正しいものはどれか。', ['RNAポリメラーゼはプライマーなしで合成を始められる','RNAポリメラーゼは3′→5′方向に合成する','DNAポリメラーゼは鋳型を必要としない','RNAポリメラーゼはDNAの両方の鎖を同時に写し取る'], 'DNAポリメラーゼは既存の鎖の3′末端に付け足すことしかできないので、RNAのプライマーが必要。', 3],
+ ['真核生物で、遺伝子から離れた位置にあっても転写を促進することができるDNA領域を何というか。', ['エンハンサー','オペレーター','エキソン','テロメア'], '転写調節因子が結合し、DNAが折れ曲がることでプロモーター付近の基本転写因子に働きかける。', 3],
+ ['目的の遺伝子につないで発現する場所を調べるのに使われる、オワンクラゲ由来の蛍光タンパク質はどれか。', ['GFP','ルシフェラーゼ','ヘモシアニン','ミオシン'], '下村脩がオワンクラゲから発見し、2008年にノーベル化学賞を受賞した。', 2],
+ ['特定の塩基配列を狙ってDNAを切断し、遺伝子を改変する「ゲノム編集」で広く使われている技術はどれか。', ['CRISPR-Cas9','PCR法','電気泳動法','サンガー法'], 'ガイドRNAが標的配列を見つけ、Cas9がその位置を切断する。2020年にノーベル化学賞。', 2],
+ ['山中伸弥らが作製したiPS細胞の説明として正しいものはどれか。', ['体細胞に少数の遺伝子を導入してつくる、さまざまな細胞に分化できる細胞','受精卵の内部細胞塊からつくる細胞','がん細胞を培養してつくる細胞','植物の茎頂からつくる細胞'], '胚を壊さずにつくれる多能性幹細胞。受精卵の内部細胞塊からつくるのはES細胞。', 1],
+ ['逆転写酵素のはたらきとして正しいものはどれか。', ['RNAを鋳型にしてDNAを合成する','DNAを鋳型にしてRNAを合成する','DNAを特定の配列で切断する','DNA断片どうしをつなぐ'], 'レトロウイルスがもつ酵素。mRNAから相補的なDNA（cDNA）をつくるのに利用される。', 1],
+],
+dev: [
+ ['減数分裂で相同染色体が対合して二価染色体をつくるのはどの時期か。', ['第一分裂前期','第一分裂後期','第二分裂前期','第二分裂中期'], '対合の際に乗換えが起こり、遺伝子の組換えが生じることがある。'],
+ ['2n＝8の生物で、乗換えを考えないとき、1個体からできる配偶子の染色体の組み合わせは何通りか。', ['16通り','4通り','8通り','64通り'], '相同染色体が4対あり、それぞれどちらが入るかで2⁴＝16通り。'],
+ ['検定交雑とはどのような交雑か。', ['調べたい個体を劣性ホモ接合体と交雑する','調べたい個体を優性ホモ接合体と交雑する','F₁どうしを交雑する','同じ遺伝子型どうしを交雑する'], '劣性ホモ接合体の配偶子は劣性遺伝子しかもたないため、子の表現型の比が調べたい個体の配偶子の比を表す。'],
+ ['独立の関係にある2対の対立遺伝子をもつAaBbを自家受精させたとき、子の表現型の分離比はどれか。', ['9：3：3：1','3：1','1：1：1：1','1：2：1'], '[AB]:[Ab]:[aB]:[ab]＝9：3：3：1。1：1：1：1は検定交雑の場合。'],
+ ['AaBbを検定交雑したら、[AB]：[Ab]：[aB]：[ab]＝4：1：1：4となった。組換え価は何％か。', ['20％','10％','25％','40％'], '組換えで生じたAbとaBの割合は(1＋1)/(4＋1＋1＋4)＝2/10＝20％。'],
+ ['赤緑色覚異常（X染色体上の劣性遺伝）について、保因者の母と正常な父の間に生まれる男子が発現する確率はどれか。', ['1/2','1/4','0','1'], '男子は母からX染色体を受け取る。母のX染色体の一方が原因遺伝子をもつので1/2。'],
+ ['カエルの受精卵で、灰色三日月環が生じる側は将来どの側になるか。', ['背側','腹側','頭部','尾部'], '精子の進入点の反対側に灰色三日月環が生じ、そこが将来の背側となる。'],
+ ['イモリの原口背唇部を別の胚の腹側に移植すると二次胚ができる。原口背唇部のような働きをもつ部分を何というか。', ['形成体（オーガナイザー）','予定神経域','卵黄栓','胞胚腔'], 'シュペーマンとマンゴルドの実験。形成体は接する外胚葉を神経管へ誘導する。'],
+ ['ニューコープの実験で示された、植物極側の細胞が動物極側の細胞に働きかけて中胚葉をつくらせる現象を何というか。', ['中胚葉誘導','神経誘導','誘導の連鎖','アポトーシス'], 'アニマルキャップ（動物極側）を植物極側の細胞と接着させて培養すると中胚葉組織が分化する。'],
+ ['神経管はどの胚葉から形成されるか。', ['外胚葉','中胚葉','内胚葉','栄養外胚葉'], '外胚葉からは神経管（脳・脊髄）と表皮が、中胚葉からは脊索・体節などが分化する。'],
+ ['ショウジョウバエの卵で前端に局在し、前後軸を決める母性因子のmRNAはどれか。', ['ビコイドmRNA','ナノスmRNA','ホックス遺伝子のmRNA','ギャップ遺伝子のmRNA'], 'ビコイドは前端に、ナノスは後端に局在する。翻訳されたタンパク質の濃度勾配が位置情報となる。'],
+ ['ショウジョウバエで、触角が生じるべき位置に脚が生じる突然変異の原因となる遺伝子の総称はどれか。', ['ホメオティック遺伝子','ペアルール遺伝子','ギャップ遺伝子','母性効果遺伝子'], 'アンテナペディア突然変異。ホメオティック遺伝子は各体節の構造を決める調節遺伝子。'],
+ ['被子植物の重複受精でできる胚乳の核相はどれか。', ['3n','2n','n','4n'], '精細胞（n）の一つが中央細胞の極核（n＋n）と合体して3nの胚乳核となる。'],
+ ['ニワトリ胚の肢芽の前方側に、後方側の極性化活性帯（ZPA）を移植した。生じる翼の指の並びとして最も適当なものはどれか。', ['正常な指の並びが鏡像対称に重複する','指がすべて失われる','指の数は変わらず、並び順が逆になるだけ','移植片から脚が生じる'], 'ZPAはソニックヘッジホッグ（Shh）を分泌し、その濃度勾配が前後軸の位置情報となる。前方にも高濃度域ができるため鏡像重複が起こる。', 4],
+ ['カエル胚で、β-カテニンが核に蓄積し、形成体の形成につながるのはどの領域か。', ['将来の背側','将来の腹側','動物極','植物極の中心'], '受精後の表層回転によって背側に運ばれた因子がβ-カテニンの分解を防ぐ。背側で核に入ったβ-カテニンが背側の遺伝子発現を誘導する。', 4],
+ ['AaBbを検定交雑すると、[AB]：[Ab]：[aB]：[ab]＝1：4：4：1となった。AaBbでの遺伝子の連鎖のしかたと組換え価の組み合わせとして正しいものはどれか。', ['Aとb・aとBが連鎖、組換え価20％','AとB・aとbが連鎖、組換え価20％','Aとb・aとBが連鎖、組換え価80％','独立、組換え価50％'], '多いのはAbとaBなので、これらが親の組み合わせ（相反）。少ないABとabが組換え型で(1＋1)/10＝20％。', 4],
+ ['ショウジョウバエの白眼はX染色体上の劣性遺伝子による。白眼の雌と赤眼の雄を交配して得たF₁どうしを交配すると、F₂で白眼の個体の割合はどれか。', ['1/2','1/4','3/4','0'], 'F₁は赤眼の雌（XᵂXʷ）と白眼の雄（XʷY）。F₂は雌がXᵂXʷ・XʷXʷ、雄がXᵂY・XʷYで、白眼は雌雄とも半分ずつ。', 4],
+ ['体細胞分裂で、染色体が赤道面に並ぶのはどの時期か。', ['中期','前期','後期','終期'], '後期に染色体が縦裂面で分かれて両極へ移動する。', 1],
+ ['1個の一次卵母細胞から減数分裂によってできる卵の数はいくつか。', ['1個','2個','4個','8個'], '細胞質が不均等に分裂し、卵1個と極体（ふつう3個）ができる。一次精母細胞からは精子が4個できる。', 2],
+ ['カエルの発生で、胞胚の次の段階はどれか。', ['原腸胚','桑実胚','神経胚','尾芽胚'], '卵割→桑実胚→胞胚→原腸胚→神経胚→尾芽胚の順に進む。', 1],
+ ['心臓・血管・骨格筋は主にどの胚葉に由来するか。', ['中胚葉','外胚葉','内胚葉','栄養外胚葉'], '中胚葉は脊索・体節・腎節・側板に分かれ、筋肉や骨格、循環系などになる。', 1],
+ ['消化管の内側の上皮・肝臓・肺はどの胚葉に由来するか。', ['内胚葉','外胚葉','中胚葉','神経堤'], '内胚葉は原腸の壁から生じ、消化管と消化腺、呼吸器の上皮になる。', 2],
+ ['眼の形成で、眼杯が表皮から誘導する構造はどれか。', ['水晶体','網膜','視神経','脈絡膜'], '眼杯（のちの網膜）が接する表皮を水晶体に誘導し、水晶体はさらに表皮を角膜に誘導する（誘導の連鎖）。', 2],
+ ['スイートピーの白花の2系統を交配するとF₁はすべて紫花になり、F₂では紫花：白花＝9：7になった。この遺伝の説明として最も適当なものはどれか。', ['2つの優性遺伝子がそろったときだけ紫色になる補足遺伝子','1つの遺伝子の不完全優性','致死遺伝子による分離比のずれ','伴性遺伝'], 'C_P_だけが紫で、C_pp・ccP_・ccppは白。9：(3＋3＋1)＝9：7になる。', 3],
+ ['ABO式血液型で、遺伝子型AOの親とBOの親の子がO型になる確率はどれか。', ['1/4','1/2','0','3/4'], '子の遺伝子型はAB・AO・BO・OOが1/4ずつ。O型（OO）は1/4。', 2],
+ ['マルバアサガオで赤花と白花を交配するとF₁はすべて桃色になった。F₂の表現型の分離比はどれか。', ['赤：桃：白＝1：2：1','赤：白＝3：1','桃：白＝3：1','赤：桃：白＝9：6：1'], '不完全優性では、ヘテロ接合体が中間の形質を示すので、遺伝子型の比がそのまま表現型の比になる。', 1],
+ ['被子植物の胚のうに含まれる核の数はいくつか。', ['8個','4個','7個','2個'], '胚のう母細胞の減数分裂でできた胚のう細胞の核が3回分裂して8個になる。細胞の数は7個（中央細胞が極核2個をもつ）。', 2],
+ ['ヒトの手の発生で、指と指の間の細胞が死んで指が分かれる。このような、決められた細胞死を何というか。', ['アポトーシス','壊死（ネクローシス）','オートファジー','細胞融合'], 'アポトーシスは遺伝的にプログラムされた細胞死で、DNAが断片化し、細胞が小さくまとまって除かれる。', 2],
+],
+body: [
+ ['血液凝固で、フィブリノーゲンをフィブリンに変える酵素はどれか。', ['トロンビン','プロトロンビン','プラスミン','アミラーゼ'], 'プロトロンビンは不活性型。血小板因子やCa²⁺の働きでトロンビンとなる。'],
+ ['血糖濃度を下げる働きをもつホルモンはどれか。', ['インスリン','グルカゴン','アドレナリン','糖質コルチコイド'], '血糖濃度を下げるホルモンはインスリンだけ。他はいずれも血糖濃度を上げる。'],
+ ['インスリンを分泌する細胞はどれか。', ['すい臓ランゲルハンス島のB細胞','すい臓ランゲルハンス島のA細胞','副腎髄質の細胞','脳下垂体前葉の細胞'], 'A細胞はグルカゴンを分泌する。'],
+ ['体液の浸透圧が上昇したとき脳下垂体後葉から分泌され、集合管での水の再吸収を促進するホルモンはどれか。', ['バソプレシン','鉱質コルチコイド','チロキシン','パラトルモン'], '視床下部の神経分泌細胞で合成され、後葉から分泌される。'],
+ ['チロキシンが過剰になると、視床下部や脳下垂体前葉からのホルモン分泌が抑えられる。このしくみを何というか。', ['負のフィードバック','正のフィードバック','拮抗作用','神経分泌'], '最終産物が上位の分泌を抑えることで、ホルモン濃度が一定範囲に保たれる。'],
+ ['腎臓で原尿がつくられるのはどこか。', ['糸球体からボーマンのう','細尿管（腎細管）','集合管','腎う'], '血液中の血球やタンパク質以外の成分が、糸球体からボーマンのうへろ過される。'],
+ ['健康なヒトで、原尿には含まれるが尿にはほとんど含まれない物質はどれか。', ['グルコース','尿素','タンパク質','血球'], 'グルコースは細尿管でほぼすべて再吸収される。タンパク質と血球はそもそもろ過されない。'],
+ ['尿量が1日1.5L、イヌリンの濃縮率が120のとき、1日の原尿量はいくらか。イヌリンは再吸収されない。', ['180L','120L','1.5L','12.5L'], 'イヌリンはろ過されたあと再吸収されないので、原尿量＝尿量×濃縮率＝1.5×120＝180L。'],
+ ['抗体を産生・分泌する細胞はどれか。', ['形質細胞（抗体産生細胞）','キラーT細胞','マクロファージ','好中球'], 'ヘルパーT細胞の働きで活性化したB細胞が増殖し、形質細胞に分化して抗体を分泌する。'],
+ ['取り込んだ抗原の情報をT細胞に提示し、獲得免疫を始動させる働きが特に強い細胞はどれか。', ['樹状細胞','好中球','赤血球','血小板'], '樹状細胞はリンパ節へ移動し、抗原をMHC分子にのせてT細胞に提示する。'],
+ ['ウイルスに感染した細胞を直接攻撃して排除する細胞はどれか。', ['キラーT細胞','B細胞','ヘルパーT細胞','形質細胞'], '細胞性免疫の中心。ヘルパーT細胞はキラーT細胞やB細胞を活性化する。'],
+ ['予防接種が利用している免疫のしくみはどれか。', ['免疫記憶による二次応答','アレルギー','自己免疫','免疫寛容'], '記憶細胞が残るため、同じ抗原が再侵入すると速く強い二次応答が起こる。'],
+ ['HIV（ヒト免疫不全ウイルス）が主に感染して破壊する細胞はどれか。', ['ヘルパーT細胞','赤血球','好中球','形質細胞'], 'ヘルパーT細胞が減ると獲得免疫全体が働かなくなり、日和見感染が起こりやすくなる（エイズ）。'],
+ ['交感神経が働いたときの変化として正しいものはどれか。', ['瞳孔が拡大する','心拍数が減少する','胃腸のぜん動が促進される','気管支が収縮する'], '交感神経は活動時に働き、心拍数増加・気管支拡張・消化管の運動抑制などを起こす。'],
+ ['ある動物の抗体遺伝子で、H鎖の可変部はV断片40種・D断片25種・J断片6種から、L鎖の可変部はV断片40種・J断片5種から1つずつ選ばれて再構成される。H鎖とL鎖の組み合わせで生じうる抗体の可変部は何通りか（その他の多様化は考えない）。', ['120万通り','6200通り','6000通り','24万通り'], 'H鎖 40×25×6＝6000通り、L鎖 40×5＝200通り。抗体はH鎖とL鎖の組み合わせなので6000×200＝120万通り（利根川進の研究）。', 4],
+ ['血液のうち、液体成分を何というか。', ['血しょう','血清','組織液','リンパ球'], '血しょうは約90％が水で、タンパク質・グルコース・無機塩類などを含む。凝固後の上澄みは血清。', 1],
+ ['赤血球に含まれ、酸素を運ぶタンパク質はどれか。', ['ヘモグロビン','ミオグロビン','フィブリン','アルブミン'], '鉄を含むヘムをもち、酸素濃度の高い肺で酸素と結合し、低い組織で離す。', 1],
+ ['CO₂濃度が高い組織でヘモグロビンが示す性質として正しいものはどれか。', ['酸素を離しやすくなる','酸素と結合しやすくなる','酸素との結合のしやすさは変わらない','二酸化炭素とだけ結合する'], '酸素解離曲線が右に移動する（ボーア効果）。よく活動してCO₂を出す組織ほど多くの酸素を受け取れる。', 2],
+ ['肺胞で酸素ヘモグロビンの割合が96％、ある組織で36％だった。肺で酸素と結合していたヘモグロビンのうち、組織で酸素を離したものの割合はおよそ何％か。', ['約63％','約60％','約38％','約96％'], '(96−36)÷96＝0.625で約63％。「全ヘモグロビンのうち」なら60％になるので、何に対する割合かに注意。', 3],
+ ['心臓の拍動のリズムをつくり出している部位（ペースメーカー）はどこか。', ['右心房の洞房結節','左心室の壁','大動脈弁','延髄の神経'], '心臓は自動性をもち、神経を切っても拍動を続ける。自律神経は拍動の速さを調節する。', 2],
+ ['肝臓のはたらきではないものはどれか。', ['インスリンの分泌','尿素の合成','グリコーゲンの貯蔵','胆汁の生成'], 'インスリンはすい臓のランゲルハンス島B細胞から分泌される。', 1],
+ ['寒いときにからだで起こる変化として正しいものはどれか。', ['皮膚の血管が収縮して放熱が減る','汗の分泌が増える','心拍数が大きく減る','皮膚の血管が拡張する'], '交感神経の働きで皮膚の血管が収縮する。アドレナリンなどで代謝を高め、発熱量も増やす。', 1],
+ ['1型糖尿病の主な原因として正しいものはどれか。', ['すい臓のB細胞が破壊され、インスリンがほとんど分泌されない','インスリンは分泌されるが標的細胞が反応しにくい','グルカゴンが分泌されない','腎臓がグルコースを再吸収しすぎる'], '自己免疫などによってB細胞が壊される。インスリンの効きが悪くなるのは2型に多い。', 2],
+ ['副腎皮質から分泌され、腎臓でのNa⁺の再吸収を促進するホルモンはどれか。', ['鉱質コルチコイド','糖質コルチコイド','アドレナリン','バソプレシン'], '体液のNa⁺量の調節に働く。糖質コルチコイドは血糖濃度を上げる。', 2],
+ ['自然免疫で、細菌を食作用で取り込んで分解する白血球として代表的なものはどれか。', ['好中球','形質細胞','ヘルパーT細胞','赤血球'], '好中球は白血球の中で最も数が多い。マクロファージや樹状細胞も食作用を行う。', 1],
+ ['血清療法の説明として正しいものはどれか。', ['他の動物につくらせた抗体を含む血清を注射して治療する','弱毒化した病原体を注射して免疫記憶をつくる','自分の血液から白血球を取り除いて戻す','抗生物質を血管に注射する'], 'ヘビ毒や破傷風の治療に使われる。即効性があるが、免疫記憶は残らない。北里柴三郎らが開発した。', 2],
+ ['ABO式血液型でA型のヒトの血しょうに含まれる抗体はどれか。', ['抗B抗体（β）','抗A抗体（α）','抗A抗体と抗B抗体の両方','どちらも含まない'], '自分の赤血球の抗原と反応しない抗体だけをもつ。O型はαとβの両方、AB型はどちらももたない。', 2],
+],
+neur: [
+ ['静止状態のニューロンの膜電位について正しいものはどれか。', ['細胞内が細胞外に対して負（約−60〜−70mV）','細胞内が細胞外に対して正','細胞内外で電位差はない','刺激の強さに比例して変化し続けている'], 'おもにK⁺が漏洩チャネルから流出することで静止電位が生じる。'],
+ ['活動電位が発生するとき、最初に細胞内へ急激に流入するイオンはどれか。', ['Na⁺','K⁺','Cl⁻','Ca²⁺'], '電位依存性Na⁺チャネルが開いてNa⁺が流入し、膜電位が逆転する。その後K⁺が流出して元に戻る。'],
+ ['跳躍伝導が起こるのはどの神経繊維か。', ['有髄神経繊維','無髄神経繊維','すべての神経繊維','筋繊維'], '髄鞘は絶縁体として働き、興奮はランビエ絞輪から絞輪へ跳ぶように伝わるので速い。'],
+ ['運動神経の末端から骨格筋へ興奮を伝える神経伝達物質はどれか。', ['アセチルコリン','ノルアドレナリン','セロトニン','インスリン'], '神経筋接合部でアセチルコリンが筋細胞膜の受容体に結合し、筋に活動電位を生じさせる。'],
+ ['1本の神経繊維は閾値以上の刺激に対して一定の大きさで興奮する。では刺激の強さはどのように伝えられるか。', ['興奮の発生頻度や興奮する神経繊維の数によって','活動電位の大きさによって','伝導速度の変化によって','静止電位の大きさによって'], '全か無かの法則のため、強さは活動電位の大きさではなく頻度と興奮する繊維の数で伝えられる。'],
+ ['骨格筋の収縮で、Ca²⁺を放出する細胞内の構造はどれか。', ['筋小胞体','ミトコンドリア','核','ゴルジ体'], '興奮がT管から伝わると筋小胞体からCa²⁺が放出される。'],
+ ['筋収縮のとき、Ca²⁺が結合してアクチンとミオシンの結合を可能にするタンパク質はどれか。', ['トロポニン','トロポミオシン','チューブリン','ヘモグロビン'], 'Ca²⁺がトロポニンに結合するとトロポミオシンの位置が変わり、ミオシン頭部がアクチンに結合できる。'],
+ ['筋収縮のとき、長さが変化しない部分はどれか。', ['暗帯（A帯）','明帯（I帯）','H帯','サルコメア'], 'アクチンフィラメントがミオシンフィラメントの間に滑り込むため、ミオシンの長さに相当する暗帯は変わらない。'],
+ ['ヒトの網膜で、明るい所で色の識別に働く視細胞はどれか。', ['錐体細胞','桿体細胞','双極細胞','神経節細胞'], '錐体細胞は黄斑に多い。桿体細胞はロドプシンをもち、弱い光でも働くが色は区別しない。'],
+ ['盲斑で光を感じない理由として正しいものはどれか。', ['視神経が網膜を貫いて出ていく部分で、視細胞がないから','錐体細胞だけが集まっているから','水晶体の影になるから','虹彩に覆われているから'], '視神経繊維が束になって眼球から出る部位には視細胞が存在しない。'],
+ ['しつがい腱反射の中枢はどこか。', ['脊髄','大脳','小脳','中脳'], '受容器（筋紡錘）→感覚神経→脊髄→運動神経→筋。大脳を経由しないので速い。'],
+ ['アメフラシの水管に繰り返し刺激を与えると、えらを引っ込める反応が弱くなる。この学習を何というか。', ['慣れ','鋭敏化','刷込み','古典的条件づけ'], '感覚ニューロンの末端からの神経伝達物質の放出量が減ることで起こる。'],
+ ['ミツバチの8の字ダンスで、直進部分の向きと重力の反対方向（鉛直上向き）がなす角度は何を表すか。', ['太陽の方向と餌場の方向がなす角度','餌場までの距離','餌の量','巣から太陽までの距離'], '距離は尻振りの速さ（直進の時間）で伝えられる。近い餌場では円形ダンスを行う。'],
+ ['ニューロンの外液のNa⁺濃度を下げてから刺激した。正常な外液の場合と比べた変化として最も適当なものはどれか。', ['静止電位はほぼ変わらないが、活動電位の最大値は小さくなる','静止電位が大きく脱分極し、活動電位は大きくなる','静止電位も活動電位も変化しない','静止電位は過分極し、活動電位は大きくなる'], '静止電位は主にK⁺の濃度差で決まる。活動電位のピークはNa⁺の流入で決まるため、外液のNa⁺が少ないと低くなる。', 4],
+ ['ニューロンの外液のK⁺濃度を高くすると、静止電位はどう変化するか。', ['0 mVに近づく（脱分極する）','より負になる（過分極する）','変化しない','正の値で一定になる'], '細胞内外のK⁺の濃度差が小さくなり、K⁺が流出しようとする力が弱まるため。', 4],
+ ['中枢神経系を構成するものの組み合わせはどれか。', ['脳と脊髄','脳と自律神経','脊髄と体性神経','感覚神経と運動神経'], '末梢神経系は体性神経系（感覚神経・運動神経）と自律神経系に分けられる。', 1],
+ ['呼吸運動や心臓の拍動の中枢があるのはどこか。', ['延髄','大脳','小脳','中脳'], '延髄は生命維持に直結する中枢が集まり、ここが損傷すると命に関わる。', 1],
+ ['体温や血糖濃度の調節の中枢として働くのはどこか。', ['間脳の視床下部','小脳','延髄','大脳の運動野'], '視床下部は自律神経系と内分泌系の両方を統合して調節する。', 1],
+ ['からだの平衡を保ち、筋肉の運動を調節する中枢はどこか。', ['小脳','延髄','中脳','間脳'], '飲酒で千鳥足になるのは、アルコールで小脳の働きが低下するため。', 1],
+ ['光の強さに応じて瞳孔の大きさが変わる反射（瞳孔反射）の中枢はどこか。', ['中脳','脊髄','小脳','大脳'], '中脳は眼球運動や瞳孔の調節、姿勢の保持に関わる。', 2],
+ ['ヒトの耳で、音を受容する聴細胞があるのはどこか。', ['うずまき管（コルチ器）','半規管','前庭','鼓膜'], 'うずまき管の基底膜の振動で聴細胞が興奮する。半規管は回転、前庭は傾きを感じる。', 2],
+ ['ヒトの眼で近くの物を見るときの遠近調節として正しいものはどれか。', ['毛様筋が収縮してチン小帯がゆるみ、水晶体が厚くなる','毛様筋がゆるんでチン小帯が引かれ、水晶体が薄くなる','虹彩が収縮して網膜が前に出る','水晶体が前後に移動する'], '水晶体は弾性で自ら厚くなろうとする。チン小帯の張力がゆるむと厚くなり、焦点距離が短くなる。', 3],
+ ['骨格筋でATPを素早く再生するために蓄えられているリン酸化合物はどれか。', ['クレアチンリン酸','グリコーゲン','ADP','NADH'], 'クレアチンリン酸のリン酸をADPに渡してATPを再生する。激しい運動の最初の数秒を支える。', 3],
+ ['骨格筋に短い間隔で刺激をくり返し与えたとき、単収縮が重なって大きく持続的な収縮になることを何というか。', ['強縮','単収縮','けいれん','弛緩'], 'ふだんの私たちの筋収縮は強縮。刺激の間隔が十分に短いと完全強縮になる。', 2],
+ ['シナプスで興奮が一方向にしか伝わらない理由として正しいものはどれか。', ['神経伝達物質は軸索の末端からだけ放出され、受容体は次の細胞の膜にあるから','シナプス間隙は狭すぎて逆向きに拡散できないから','樹状突起は電気を通さないから','神経伝達物質は正の電荷しかもたないから'], '軸索の上では興奮は両方向に伝導するが、シナプスでの伝達は一方向。', 2],
+ ['抑制性シナプスで神経伝達物質を受け取った細胞の膜電位の変化として最も適当なものはどれか。', ['Cl⁻などが流入して過分極する','Na⁺が流入して脱分極する','膜電位は変化しない','必ず活動電位が生じる'], '過分極によって閾値に達しにくくなり、次の細胞が興奮しにくくなる。', 3],
+ ['イヌにベルの音を聞かせてから餌を与えることをくり返すと、ベルの音だけで唾液が出るようになる。この学習を何というか。', ['古典的条件づけ','刷込み','慣れ','試行錯誤学習'], 'パブロフが発見した。本来関係のない刺激（ベルの音）が、反応を起こす刺激と結びつく。', 1],
+],
+plnt: [
+ ['光屈性で茎が光の方向へ曲がる理由として正しいものはどれか。', ['オーキシンが光の当たらない側へ移動し、その側の伸長が促進されるから','オーキシンが光の当たる側で合成され、その側の伸長が促進されるから','ジベレリンが光の当たる側で分解されるから','エチレンが光の当たらない側で合成されるから'], '光はフォトトロピンで受容され、オーキシンが陰側に移動する。'],
+ ['茎におけるオーキシンの極性移動の方向はどれか。', ['先端側から基部側','基部側から先端側','向軸側から背軸側','重力と反対方向'], '細胞の基部側に偏在する排出輸送体（PINタンパク質）によって一方向に輸送される。'],
+ ['頂芽があると側芽の成長が抑えられる現象（頂芽優勢）に関わる主な植物ホルモンはどれか。', ['オーキシン','アブシシン酸','エチレン','フロリゲン'], '頂芽でつくられたオーキシンが側芽の成長を抑える。サイトカイニンは側芽の成長を促進する。'],
+ ['種子の休眠を維持し、乾燥時に気孔を閉じさせる植物ホルモンはどれか。', ['アブシシン酸','ジベレリン','オーキシン','サイトカイニン'], 'アブシシン酸は孔辺細胞からK⁺を流出させ、膨圧を下げて気孔を閉じる。'],
+ ['オオムギの種子で、胚から分泌されて糊粉層にアミラーゼを合成させ、発芽を促進する植物ホルモンはどれか。', ['ジベレリン','アブシシン酸','エチレン','ジャスモン酸'], 'アミラーゼが胚乳のデンプンを糖に分解し、胚の成長に使われる。'],
+ ['果実の成熟を促進する気体の植物ホルモンはどれか。', ['エチレン','二酸化炭素','オーキシン','ブラシノステロイド'], 'リンゴとバナナを一緒に置くとバナナが早く熟すのは、リンゴが出すエチレンのため。'],
+ ['レタスなどの光発芽種子の発芽を促進する光はどれか。', ['赤色光','遠赤色光','緑色光','紫外線'], 'フィトクロムが赤色光を吸収してPfr型になると発芽が促進される。遠赤色光で打ち消される。'],
+ ['短日植物の花芽形成を決める要因として正しいものはどれか。', ['連続した暗期の長さが限界暗期以上になること','明期の合計時間が一定以上になること','気温が一定以下になること','光の強さが一定以上になること'], '暗期の途中で短時間光を当てる（光中断）と、短日植物は花芽を形成しなくなる。'],
+ ['短日植物はどれか。', ['アサガオ','ホウレンソウ','コムギ','ダイコン'], 'アサガオ・キク・オナモミ・ダイズなどが短日植物。ホウレンソウ・コムギ・ダイコンは長日植物。'],
+ ['シロイヌナズナで、葉でつくられ茎頂に移動して花芽形成を誘導するフロリゲンの実体はどれか。', ['FTタンパク質','フィトクロム','オーキシン','ビコイド'], 'イネではHd3aタンパク質がフロリゲンとして働く。'],
+ ['光屈性や気孔の開口に関わる青色光の受容体はどれか。', ['フォトトロピン','フィトクロム','ロドプシン','クロロフィル'], 'フィトクロムは赤色光・遠赤色光の受容体。クリプトクロムも青色光受容体で、茎の伸長抑制に関わる。'],
+ ['ABCモデルで、B遺伝子とC遺伝子が働く領域に形成される花の器官はどれか。', ['おしべ','花弁','がく片','めしべ'], 'Aのみ：がく片、A＋B：花弁、B＋C：おしべ、Cのみ：めしべ。'],
+ ['気孔が開くしくみとして正しいものはどれか。', ['孔辺細胞にK⁺が流入して浸透圧が上がり、吸水して膨圧が高まる','孔辺細胞からK⁺が流出して膨圧が下がる','孔辺細胞の細胞壁が全体に均一に薄くなる','孔辺細胞の葉緑体が分解される'], '孔辺細胞の細胞壁は気孔側が厚いため、膨圧が上がると外側に湾曲して気孔が開く。'],
+ ['短日植物に、限界暗期より長い暗期を与え、その途中で赤色光を照射した直後に遠赤色光を照射した。花芽形成はどうなるか。', ['花芽を形成する','花芽を形成しない','花芽の代わりに根が出る','暗期の長さに関係なく枯れる'], '赤色光の光中断でできたPfr型のフィトクロムが、直後の遠赤色光でPr型に戻るため、光中断の効果が打ち消される。最後に当てた光が結果を決める。', 4],
+ ['根を水平に置くと下向きに曲がる。この理由として最も適当なものはどれか。', ['オーキシンが下側に集まり、根では高濃度のオーキシンが伸長を抑えるから','オーキシンが上側に集まり、上側の伸長を抑えるから','根ではオーキシンが分解されるから','重力で細胞が下に引かれるから'], '根は茎よりオーキシンに対する感受性が高く、茎の伸長を促す濃度でも根では伸長が抑えられる。', 3],
+ ['根で重力の方向を感知している細胞小器官はどれか。', ['根冠のコルメラ細胞にあるアミロプラスト','根毛の液胞','形成層の核','師管の細胞壁'], 'デンプンを蓄えた重いアミロプラストが重力の方向に沈み、オーキシンの輸送の向きが変わる。', 3],
+ ['葉のつけ根に離層をつくらせ、落葉を促進する植物ホルモンはどれか。', ['エチレン','オーキシン','ジベレリン','サイトカイニン'], '葉でつくられるオーキシンが減ると、エチレンの作用で離層ができる。オーキシンは離層の形成を抑える。', 2],
+ ['細胞分裂を促進し、葉の老化を抑える植物ホルモンはどれか。', ['サイトカイニン','アブシシン酸','エチレン','ジャスモン酸'], '組織培養ではオーキシンとサイトカイニンの濃度の比で、芽と根のどちらが分化するかが変わる。', 2],
+ ['長日植物はどれか。', ['ホウレンソウ','アサガオ','キク','オナモミ'], 'ホウレンソウ・コムギ・アブラナなどは春から初夏の日長が長くなる時期に花を咲かせる。', 1],
+ ['秋まきのコムギは、冬の低温を経験しないと花芽をつくらない。このように、一定期間の低温によって花芽の形成が促される現象を何というか。', ['春化（バーナリゼーション）','光周性','休眠','頂芽優勢'], '春まきにする場合は、種子を低温で処理してから植える。', 2],
+ ['病原体に感染した部分の細胞が自ら死んで、感染の広がりを防ぐ植物の防御反応を何というか。', ['過敏感反応','頂芽優勢','光屈性','傾性'], '感染した場所で細胞死を起こして病原体を閉じ込める。周りの組織では抗菌物質もつくられる。', 3],
+ ['昆虫に葉を食べられたとき植物でつくられ、タンパク質分解酵素の阻害物質などの防御物質の合成を促す植物ホルモンはどれか。', ['ジャスモン酸','ジベレリン','サイトカイニン','オーキシン'], '食べた昆虫の消化を妨げる物質がつくられる。揮発性の物質で周りの植物に危険を知らせる例もある。', 3],
+ ['葉で光合成によってつくられた糖を、からだの各部に運ぶ通り道はどれか。', ['師管','道管','気孔','根毛'], '道管は根で吸収した水や無機塩類を運ぶ。師管と道管が集まったものが維管束。', 1],
+],
+eco: [
+ ['生産者の総生産量から呼吸量を引いたものを何というか。', ['純生産量','成長量','被食量','同化量'], '純生産量＝総生産量−呼吸量。'],
+ ['生産者の成長量を正しく表しているものはどれか。', ['純生産量−（被食量＋枯死量）','総生産量−純生産量','総生産量＋呼吸量','同化量−不消化排出量'], '成長量＝総生産量−（呼吸量＋被食量＋枯死量）とも表せる。'],
+ ['生態ピラミッドのうち、上下が逆転することがないものはどれか。', ['生産力ピラミッド','個体数ピラミッド','生物量ピラミッド','すべて逆転しうる'], 'エネルギーは上位の栄養段階ほど必ず少なくなる。個体数は寄生関係などで逆転しうる。'],
+ ['ある池で魚を50匹捕獲して標識し放流した。後日60匹捕獲したら標識された個体は10匹だった。池の魚の推定個体数はいくらか。', ['300匹','120匹','600匹','110匹'], '標識再捕法：50×60÷10＝300匹。'],
+ ['一次遷移の初期に侵入する先駆種（パイオニア種）の特徴として最も適当なものはどれか。', ['乾燥や貧栄養に強く、小さな種子を風で散布する','耐陰性が高く、大きな種子をつくる','幼木が暗い林床でよく育つ','成長は遅いが寿命が長い'], 'ススキ・イタドリなどの草本や地衣類・コケ植物が先駆種として侵入する。'],
+ ['森林の極相で優占する樹木として最も適当なものはどれか。', ['陰樹','陽樹','先駆植物','つる植物'], '陽樹の林床は暗いため陽樹の幼木は育たず、耐陰性の高い陰樹が置き換わっていく。'],
+ ['極相林で倒木などによって林冠に穴ができ、そこで陽樹などが生育して樹木が入れ替わることを何というか。', ['ギャップ更新','二次遷移','一次遷移','生物濃縮'], 'ギャップが大きいと陽樹が育つ。森林は小規模な遷移をくり返しながら多様性を保っている。'],
+ ['日本の暖温帯に分布するバイオームと代表的な樹種の組み合わせとして正しいものはどれか。', ['照葉樹林－スダジイ・アラカシ','夏緑樹林－ブナ・ミズナラ','針葉樹林－シラビソ・コメツガ','亜熱帯多雨林－ヘゴ・ガジュマル'], '夏緑樹林は冷温帯、針葉樹林は亜寒帯（本州中部では亜高山帯）、亜熱帯多雨林は沖縄など。'],
+ ['ラッコがいなくなるとウニが増えてケルプ（海藻）の森が失われた。ラッコのように、生態系のバランスに大きな影響を与える種を何というか。', ['キーストーン種','外来生物','先駆種','優占種'], 'キーストーン種は個体数が少なくても群集全体に大きな影響を与える上位捕食者であることが多い。'],
+ ['生物濃縮について正しいものはどれか。', ['分解・排出されにくい物質が、高次の消費者ほど高い濃度で蓄積する','栄養塩類が増えてプランクトンが大量発生する','外来生物が在来種を駆逐する','有機物が分解されて無機物になる'], 'DDTやPCB、メチル水銀などが例。'],
+ ['湖沼で窒素やリンなどの栄養塩類が増加し、アオコなどが発生しやすくなる現象を何というか。', ['富栄養化','生物濃縮','自然浄化','温室効果'], '海で起こるプランクトンの異常発生は赤潮と呼ばれる。'],
+ ['トノサマバッタは個体群密度が高い状態で育つと、はねが長く集団で移動する個体になる。この変化を何というか。', ['相変異','突然変異','遷移','適応放散'], '高密度で生じる型を群生相、低密度で生じる型を孤独相という。'],
+ ['なわばりの大きさについて最も適当な説明はどれか。', ['なわばりから得られる利益と防衛のコストの差が最大になる大きさになりやすい','大きいほど常に有利なので限りなく大きくなる','個体群密度が高いほど大きくなる','防衛のコストは大きさに関係なく一定である'], 'なわばりが大きいほど利益は増えるが、侵入者を追い払うコストも増える。'],
+ ['生態系で、生物の遺体や排出物を無機物に分解する役割をもつのはどの生物か。', ['菌類や細菌','生産者','一次消費者','高次消費者'], '分解者も、有機物を取り込んで利用する消費者の一種とみなすことができる。', 1],
+ ['土壌中の硝酸イオンを窒素ガス（N₂）に変えて大気中に戻すはたらきを何というか。', ['脱窒','窒素固定','窒素同化','硝化'], '脱窒素細菌が酸素の少ない環境で行う。', 2],
+ ['生物多様性の3つのレベルに含まれないものはどれか。', ['細胞の多様性','遺伝的多様性','種の多様性','生態系の多様性'], '同じ種の中の遺伝子の違い、種の数と割合、さまざまな生態系があることの3つのレベルで考える。', 2],
+ ['ゾウリムシとヒメゾウリムシを同じ容器で飼うと、やがてヒメゾウリムシだけが残った。2種の間に見られた関係はどれか。', ['種間競争','相利共生','捕食と被食','寄生'], 'ガウゼの実験。食物やすみかなど、必要とする資源が似ている種どうしでは競争が起こり、片方が排除されることがある（競争的排除）。', 2],
+ ['イワナとヤマメは、一緒にいる川では上流にイワナ、下流にヤマメが分かれて生活する。この現象を何というか。', ['すみわけ','食いわけ','なわばり','共生'], '生態的地位（ニッチ）の似た種が生活の場所を分けることで、競争を避けて共存する。', 2],
+ ['年齢ピラミッドで、若い個体の割合が大きい「幼若型」の個体群は今後どうなると予想されるか。', ['個体数が増加していく','個体数が減少していく','個体数がほぼ一定に保たれる','すぐに絶滅する'], '安定型はほぼ一定、老齢型は減少していくと予想される。', 1],
+ ['生存曲線で、親が子を保護するため若い時期の死亡率が低く、多くの個体が寿命近くまで生きる型（晩死型）を示す生物はどれか。', ['ヒトや大型の哺乳類','イワシなど多くの魚類','カキなどの貝類','多くの昆虫'], '多くの卵を産み、ほとんどが若いうちに死ぬ生物は早死型を示す。', 2],
+ ['陸上のバイオームを決める主な要因の組み合わせはどれか。', ['年平均気温と年降水量','日照時間と風向き','土壌のpHと標高','海からの距離と緯度'], '降水量が十分なら気温に応じて森林、降水量が少ないと草原や荒原になる。', 1],
+ ['熱帯や亜熱帯で降水量が少ない地域に見られる、イネのなかまの草原に樹木がまばらに生える草原を何というか。', ['サバンナ','ステップ','ツンドラ','硬葉樹林'], 'ステップは温帯の乾燥した地域の草原で、樹木はほとんど見られない。', 2],
+ ['中規模撹乱説の内容として正しいものはどれか。', ['撹乱が中程度のときに種の多様性が最も高くなる','撹乱が全くないときに種の多様性が最も高くなる','撹乱が大きいほど種の多様性が高くなる','撹乱の大きさと種の多様性は無関係である'], '撹乱が少ないと競争に強い種が独占し、大きすぎると耐えられる種しか残らない。', 3],
+ ['地球温暖化の原因となる温室効果ガスのうち、人間の活動によって排出される量が最も多いものはどれか。', ['二酸化炭素','酸素','窒素','アルゴン'], '化石燃料の燃焼や森林の減少によって大気中の濃度が上がっている。メタンやフロン類も温室効果ガス。', 1],
+],
+evo: [
+ ['ある集団でハーディ・ワインベルグの法則が成り立ち、劣性形質を示す個体が16％いる。ヘテロ接合体の割合は何％か。', ['48％','36％','24％','16％'], '劣性遺伝子の頻度q＝√0.16＝0.4、p＝0.6。ヘテロ接合体は2pq＝2×0.6×0.4＝0.48。'],
+ ['遺伝的浮動について正しいものはどれか。', ['偶然によって遺伝子頻度が変化する現象で、小さな集団ほど影響が大きい','環境に適した遺伝子が必ず増加する現象','突然変異によって新しい遺伝子が生じる現象','大きな集団ほど影響が大きい'], '集団の個体数が激減したときに起こるびん首効果も、遺伝的浮動の一つ。'],
+ ['地理的隔離によって集団が分断され、その後に生殖的隔離が生じて新しい種ができることを何というか。', ['異所的種分化','同所的種分化','適応放散','収れん'], '同所的種分化は、倍数化などにより同じ地域で生殖的隔離が生じる種分化。'],
+ ['相同器官の組み合わせとして正しいものはどれか。', ['ヒトの腕とクジラの胸びれ','鳥の翼と昆虫のはね','サツマイモの根とジャガイモの塊茎','魚のえらとヒトの肺'], '相同器官は起源が同じで形やはたらきが異なる器官。鳥の翼と昆虫のはねは相似器官。'],
+ ['分子時計の考え方の前提として正しいものはどれか。', ['塩基配列やアミノ酸配列の置換速度がほぼ一定である','形態の変化速度が一定である','突然変異はすべて自然選択を受ける','化石の数が時代によらず一定である'], '置換数の差から、種が分岐した年代を推定できる。'],
+ ['分子進化の多くは、生存に有利でも不利でもない突然変異が遺伝的浮動によって広がった結果だとする説を何というか。', ['中立説','用不用説','自然選択説','定向進化説'], '木村資生が提唱した。'],
+ ['ウーズが提唱した3ドメインに含まれないものはどれか。', ['原生生物','細菌（バクテリア）','アーキア（古細菌）','真核生物'], 'rRNAの塩基配列の比較をもとに、生物を細菌・アーキア・真核生物の3ドメインに分けた。'],
+ ['葉緑体の起源として考えられている生物はどれか。', ['シアノバクテリア','好気性細菌','アーキア','菌類'], '細胞内共生説。ミトコンドリアは好気性細菌に由来すると考えられている。'],
+ ['陸上植物に最も近縁とされる藻類はどれか。', ['シャジクモ類（車軸藻類）','褐藻類','紅藻類','ケイ藻類'], 'シャジクモ類は陸上植物と共通の特徴を多くもち、陸上植物の祖先に近いと考えられている。'],
+ ['カンブリア紀の多様な動物の化石を含む、カナダで見つかった動物群はどれか。', ['バージェス動物群','エディアカラ生物群','チェンジャン動物群','三葉虫群'], 'エディアカラ生物群は先カンブリア時代末。チェンジャン動物群は中国のカンブリア紀の動物群。'],
+ ['原始の地球で大気中の酸素を増加させた生物と、その活動でできた岩石の組み合わせはどれか。', ['シアノバクテリア－ストロマトライト','緑藻類－石灰岩','光合成細菌－縞状鉄鉱層','シダ植物－石炭'], 'シアノバクテリアが酸素発生型の光合成を行った。ストロマトライトはシアノバクテリアの活動でできた層状の岩石。'],
+ ['リンネが確立した、属名と種小名で種を表す方法を何というか。', ['二名法','三ドメイン説','分子系統','五界説'], '例：ヒトは Homo sapiens（属名＋種小名）。'],
+ ['新口動物に含まれるものはどれか。', ['ウニ（棘皮動物）','昆虫（節足動物）','イカ（軟体動物）','ミミズ（環形動物）'], '原口が肛門になる新口動物には棘皮動物と脊索動物が含まれる。'],
+ ['ハーディ・ワインベルグの法則が成り立つ集団で、X染色体上の劣性遺伝子による形質を示す男性が4％いる。この形質を示す女性の割合はどれか。', ['0.16％','4％','2％','0.4％'], '男性はX染色体を1本しかもたないので、劣性遺伝子の頻度q＝0.04。女性は劣性ホモでのみ発現するのでq²＝0.0016＝0.16％。', 4],
+ ['ミツバチのように雌が二倍体、雄が一倍体（半倍数性）の生物で、同じ両親から生まれた姉妹の間の血縁度はいくらか。', ['3/4','1/2','1/4','1'], '父由来の遺伝子は姉妹で必ず共通（1/2×1）、母由来は1/2の確率で共通（1/2×1/2）。合計3/4で、自分の子（1/2）より高い。真社会性の説明に使われる。', 4],
+ ['自然選択説を提唱したのは誰か。', ['ダーウィン','ラマルク','メンデル','ド・フリース'], '1859年に『種の起源』を著した。ウォレスも同じ時期に同様の考えにたどり着いた。', 1],
+ ['よく使う器官は発達し、使わない器官は退化して、それが子に伝わるとする説を何というか。', ['用不用説','自然選択説','中立説','突然変異説'], 'ラマルクが提唱した。獲得形質は遺伝しないため、現在は否定されている。', 1],
+ ['工業化で樹皮がすすで黒くなったイギリスの地域で、オオシモフリエダシャクの黒色型が増えた。この主な原因はどれか。', ['白色型が鳥に見つかりやすく、多く食べられたから','すすを浴びた個体が黒くなり、それが遺伝したから','黒色型の方が多く卵を産むようになったから','突然変異の頻度が大気汚染で上がったから'], '工業暗化と呼ばれ、自然選択の代表的な例。大気がきれいになると白色型が再び増えた。', 2],
+ ['鎌状赤血球症の原因となる遺伝子が、マラリアの多い地域で高い頻度で見られる理由として最も適当なものはどれか。', ['ヘテロ接合体はマラリアにかかりにくく、生存に有利だから','ホモ接合体の方が子を多く残すから','マラリアの病原体が遺伝子を変化させるから','偶然による遺伝的浮動だけで説明できるから'], 'ホモ接合体は重い貧血になるが、ヘテロ接合体はマラリアに抵抗性があるため、遺伝子が集団から失われない。', 3],
+ ['クジャクの雄の長く派手な羽のように、生存には不利でも雌に選ばれやすいために発達した形質は、何によって進化したと考えられるか。', ['性選択','人為選択','遺伝的浮動','用不用'], '雌が派手な雄を好むことで、その形質をもつ雄が多くの子を残す。', 2],
+ ['有袋類のフクロモモンガと真獣類のモモンガは、系統が離れているのによく似た姿をしている。このような進化を何というか。', ['収れん（収束進化）','適応放散','共進化','分子進化'], '似た環境に適応した結果、異なる系統の生物が似た形態をもつようになる。', 2],
+ ['ガラパゴス諸島のフィンチ類のように、1つの祖先からさまざまな環境に適応した多くの種が生じることを何というか。', ['適応放散','収れん','びん首効果','共生'], 'ダーウィンフィンチは、食べ物に応じてくちばしの形が異なる種に分かれた。', 2],
+ ['被子植物が出現したと考えられている時代はどれか。', ['中生代','古生代','新生代','先カンブリア時代'], '中生代の白亜紀に出現し、新生代に繁栄した。', 2],
+ ['人類の直立二足歩行に関連した骨格の特徴として正しいものはどれか。', ['大後頭孔が頭骨の真下に開いている','大後頭孔が頭骨の後方に開いている','骨盤が縦に細長い','足の親指が他の指と向かい合う'], '頭骨を背骨が下から支えるため、脊髄の通る大後頭孔が真下を向く。骨盤は横に広く内臓を支える形。', 3],
+ ['地球が誕生したのはおよそ何年前か。', ['約46億年前','約4億6000万年前','約5億4000万年前','約138億年前'], '最古の生命の痕跡は約38〜40億年前、約138億年前は宇宙の誕生。', 1],
+ ['酵母（パン酵母）は、生物の分類でどのなかまに含まれるか。', ['菌類','細菌','植物','原生動物'], '酵母は単細胞の真核生物で、カビやキノコと同じ菌類に含まれる。', 2],
+],
+// ---- 岡大志望編（4番目の数字＝難易度）
+oexp: [
+ ['ある組織の細胞1000個を観察するとM期の細胞が50個あった。細胞周期が20時間で、各時期の細胞数がその時期の長さに比例するとき、M期の長さは何時間か。', ['1時間','2時間','5時間','0.5時間'], '20時間×50/1000＝1時間。細胞周期がそろっていない集団では、各時期の細胞数の割合＝その時期の長さの割合。', 2],
+ ['ある2本鎖DNAで、全塩基に占めるアデニンの割合が20％のとき、グアニンの割合は何％か。', ['30％','20％','40％','60％'], 'A＝T＝20％なのでG＋C＝60％、G＝C＝30％（シャルガフの規則）。', 1],
+ ['mRNAの開始コドンから終止コドンまで（終止コドンを含む）が900塩基のとき、合成されるポリペプチドのアミノ酸数はいくつか。', ['299個','300個','900個','297個'], '900÷3＝300コドン。終止コドンはアミノ酸を指定しないので299個。', 2],
+ ['基質濃度が十分に高い条件で、酵素濃度だけを2倍にすると反応速度はどうなるか。', ['約2倍になる','変わらない','約1/2になる','約4倍になる'], '基質が飽和しているとき、反応速度（最大反応速度）は酵素量に比例する。', 2],
+ ['陰生植物を陽生植物と比べたときの特徴として正しいものはどれか。', ['光補償点も光飽和点も低い','光補償点も光飽和点も高い','光補償点は高く光飽和点は低い','呼吸速度が大きい'], '陰生植物は呼吸速度が小さく、弱い光でも見かけの光合成速度が正になるため、林床でも生育できる。', 2],
+ ['座骨神経の2点を刺激したところ、筋収縮が起こるまでの時間は筋から遠い点で6.0ミリ秒、近い点で5.0ミリ秒だった。2点間の距離が4.0cmのとき、興奮の伝導速度はいくらか。', ['40 m/秒','4 m/秒','0.8 m/秒','8 m/秒'], '時間差1.0ミリ秒で4.0cm進む。0.04m÷0.001秒＝40m/秒。差をとることで、シナプス伝達や筋収縮にかかる時間が打ち消される。', 3],
+ ['1日の原尿量が180L、尿量が1.5Lのとき、水の再吸収率はおよそ何％か。', ['約99％','約90％','約80％','約12％'], '(180−1.5)/180＝0.9916…で約99％。', 2],
+ ['マウスの毛色で、黄色遺伝子Yは黒色遺伝子yに対して優性だが、YYは胎児期に死ぬ。黄色どうしを交配したとき、生まれる子の表現型の比はどれか。', ['黄色：黒色＝2：1','黄色：黒色＝3：1','黄色：黒色＝1：1','すべて黄色'], 'Yy×Yy → YY：Yy：yy＝1：2：1のうちYYが死ぬので、黄（Yy）：黒（yy）＝2：1。致死遺伝子の典型例。', 2],
+ ['同じ染色体上の遺伝子A・B・Cの組換え価が、A-B間10％、B-C間4％、A-C間14％だった。遺伝子の並び順として正しいものはどれか。', ['A－B－C','A－C－B','B－A－C','決められない'], 'A-C間＝A-B間＋B-C間になるので、Bが中央にある（三点交雑）。', 2],
+ ['ロジスティック曲線に従って増える個体群で、個体数の増加速度が最大になるのはいつか。', ['個体数が環境収容力の約1/2のとき','個体数が最も少ないとき','個体数が環境収容力に達したとき','増加速度は常に一定'], '密度効果のため、個体数が増えるほど1個体あたりの増加率は下がる。全体の増加速度はK/2付近で最大になる。', 3],
+ ['臓器移植で拒絶反応の主な原因となる、細胞表面にある個人ごとに異なる分子を何というか。', ['MHC分子（ヒトではHLA）','抗体','ABO式血液型の抗原だけ','ヒストン'], 'キラーT細胞は移植片のMHC分子を非自己として認識して攻撃する。', 2],
+ ['体細胞のG₁期のDNA量を2とすると、減数分裂の第二分裂が終わった直後の細胞のDNA量はいくつか。', ['1','2','4','0.5'], 'S期で4になり、第一分裂で2、第二分裂で1になる。', 1],
+ ['ある酵素の実験で、基質濃度が低いときだけ阻害物質の影響が大きく、基質濃度を高くすると阻害がほぼ見られなくなった。このことから考えられる阻害物質の性質はどれか。', ['基質と立体構造が似ており、活性部位に結合する','活性部位以外に結合して酵素の形を変える','酵素を熱変性させる','補酵素を分解する'], '競争的阻害。非競争的阻害なら基質濃度を高くしても最大反応速度は低いまま。', 3],
+ ['光合成速度を測る実験で、CO₂濃度を十分高くしても光合成速度がそれ以上増えなかった。このときの限定要因として最も考えられるものはどれか。', ['光の強さまたは温度','CO₂濃度','水の量だけ','クロロフィルの色'], '限定要因説（ブラックマン）：最も不足している要因が速度を決める。CO₂を増やしても変化しないならCO₂以外が限定要因。', 3],
+ ['ある植物の見かけの光合成速度が6、呼吸速度が2のとき、光合成速度（真の光合成速度）はいくらか（単位は同じ）。', ['8','4','6','12'], '光合成速度＝見かけの光合成速度＋呼吸速度。測定できるのは、光合成と呼吸の差である見かけの光合成速度。', 2],
+ ['培養細胞のDNA量を1細胞ずつ測定すると、G₁期の2倍の値をもつ細胞と、その中間の値をもつ細胞が見られた。中間の値をもつ細胞はどの時期にあるか。', ['S期','G₁期','G₂期','M期'], 'S期はDNAを複製している途中なので、DNA量がG₁期とG₂期の間の値をとる。', 2],
+ ['DNAの二重らせんは10塩基対で1回転し、その長さは3.4nmである。長さ340nmのDNAに含まれる塩基対の数はいくつか。', ['1000','100','3400','10000'], '1塩基対あたり0.34nm。340÷0.34＝1000塩基対。', 2],
+ ['ある植物の細胞を0.3mol/Lのスクロース溶液に入れても原形質分離は起こらず、0.4mol/Lで起こった。細胞液の濃度について言えることはどれか。', ['0.3〜0.4mol/Lの間のスクロース溶液と等しい浸透圧をもつ','0.3mol/L未満と等しい','0.4mol/Lより高い','このデータからは何もわからない'], '細胞液より高張な溶液で原形質分離が起こる。境目にあたる濃度の溶液が細胞液と等張。', 2],
+ ['酵素の反応速度が最適温度を超えると急に低下する理由として正しいものはどれか。', ['酵素タンパク質の立体構造が変化して失活するから','基質が熱で分解するから','酵素が増えすぎるから','生成物が熱で基質に戻るから'], '温度が上がると分子の運動が活発になり反応は速くなるが、高温では酵素が変性する。', 1],
+ ['100個体の集団で、遺伝子型AAが36個体、Aaが48個体、aaが16個体だった。遺伝子Aの頻度はいくらか。', ['0.6','0.36','0.48','0.84'], '遺伝子は全部で200個。Aの数＝36×2＋48＝120、120÷200＝0.6。', 2],
+ ['ある生態系で、一次消費者の同化量が100、二次消費者の同化量が15だった。二次消費者のエネルギー効率は何％か。', ['15％','85％','1.5％','6.7％'], 'エネルギー効率＝その栄養段階の同化量÷1つ前の栄養段階の同化量×100。', 2],
+ ['標識再捕法で正しく個体数を推定するための条件として適当でないものはどれか。', ['標識した個体の方が再び捕まりやすいこと','標識が個体の生存や行動に影響しないこと','調査期間中に移入・移出・出生・死亡がほとんどないこと','放した標識個体が集団の中に十分に混ざること'], '標識個体が捕まりやすいと、再捕獲での標識個体の割合が大きくなり、個体数が少なく推定されてしまう。', 3],
+ ['ある物質Xが植物の成長を促進するかを調べる実験で、対照実験として最も適当なものはどれか。', ['物質Xだけを含まない条件で、他はすべて同じにして育てる','物質Xの濃度を2倍にして育てる','日光を当てずに物質Xを与えて育てる','別の種類の植物に物質Xを与えて育てる'], '調べたい条件以外をすべて同じにすることで、結果の違いが物質Xによるものだと言える。', 1],
+],
+olab: [
+ ['岡山大学の沈建仁教授らが2011年に高い分解能で立体構造を明らかにした、光合成で水を分解して酸素を発生させる膜タンパク質複合体はどれか。', ['光化学系Ⅱ','光化学系Ⅰ','ATP合成酵素','ルビスコ'], '光化学系Ⅱの1.9Å分解能の結晶構造がNature誌に発表され、水分解のしくみの理解が大きく進んだ。', 2],
+ ['光化学系Ⅱの中で水の分解を触媒する金属クラスターはどれか。', ['Mn₄CaO₅（マンガン4・カルシウム1・酸素5）','Fe₄S₄（鉄硫黄クラスター）','ヘム（鉄ポルフィリン）','Mg（クロロフィルの中心金属）'], 'その形は「ゆがんだ椅子」にたとえられる。人工光合成の触媒設計の手がかりとして注目されている。', 3],
+ ['岡山大学資源植物科学研究所（倉敷市）が、世界有数の規模で系統（遺伝資源）を保存している作物はどれか。', ['オオムギ','トウモロコシ','ジャガイモ','サトウキビ'], '世界各地から集めたオオムギの系統を保存し、ゲノム研究やストレス耐性の研究に使われている。', 2],
+ ['岡山県笠岡市の生息地が国の天然記念物に指定されている「生きた化石」はどれか。', ['カブトガニ','シーラカンス','オウムガイ','カモノハシ'], 'カブトガニは名前にカニとあるが、クモやサソリに近い鋏角類。干潟の減少で数が減っている。', 1],
+ ['岡山県真庭市の湯原などに生息する、国の特別天然記念物の両生類はどれか。', ['オオサンショウウオ','イモリ','トノサマガエル','カスミサンショウウオ'], '世界最大級の両生類で、きれいな川の上流に住む。', 1],
+ ['岡山大学理学部の臨海実験所があり、ウニなどの海産生物の発生研究に使われている瀬戸内海沿岸の地はどこか。', ['牛窓（瀬戸内市）','倉敷','津山','玉野'], '臨海実験所では、ウニやホヤなど受精や発生の研究に向いた海産生物を扱える。', 2],
+ ['岡山県の「県の鳥」はどれか。', ['キジ','ウグイス','トキ','ライチョウ'], 'キジは日本の国鳥でもあり、桃太郎のお供としても岡山とゆかりがある。県の花はモモの花。', 1],
+ ['岡山で盛んなマスカット・オブ・アレキサンドリアの栽培で、主に使われてきた施設はどれか。', ['ガラス温室','水田','露地の棚のみ','地下室'], '高温を好み雨に弱い品種のため、明治時代からガラス温室で栽培されてきた。', 2],
+],
+// ---- 雑学編
+zbod: [
+ ['成人のヒトの骨はおよそ何個あるか。', ['約206個','約100個','約350個','約600個'], '生まれたばかりの赤ちゃんは約300個あり、成長とともに一部がくっついて減る。', 1],
+ ['ヒトの体の中で最も重い臓器はどれか（皮膚を除く）。', ['肝臓','脳','心臓','肺'], '成人の肝臓は約1.2〜1.5kg。皮膚を1つの器官とみなすと皮膚が最大。', 1],
+ ['ヒトの体で最も硬い組織はどれか。', ['歯のエナメル質','大腿骨','爪','軟骨'], 'エナメル質はリン酸カルシウムの結晶（ハイドロキシアパタイト）がほとんどを占める。', 1],
+ ['ヒトの赤血球の寿命はおよそどれくらいか。', ['約120日','約3日','約1年','約10年'], '古くなった赤血球はおもにひ臓や肝臓で壊される。', 1],
+ ['ヒトの体で最も小さい骨はどれか。', ['あぶみ骨（耳小骨）','指の末節骨','尾骨','鎖骨'], '中耳にある耳小骨の一つで、長さ約3mm。鼓膜の振動を内耳に伝える。', 2],
+ ['ヒトの体を構成する細胞の数はおよそどれくらいと推定されているか。', ['約37兆個','約60億個','約3700億個','約1京個'], '2013年に発表された推定。以前は約60兆個とよく言われていた。', 2],
+ ['ヒトの体細胞1個に含まれるDNAをすべてつなぐと、長さはおよそどれくらいか。', ['約2m','約2mm','約2cm','約2km'], '約60億塩基対が、直径数μmの核にヒストンに巻きついて収まっている。', 2],
+ ['成人のヒトが1日に分泌する唾液の量はおよそどれくらいか。', ['約1〜1.5L','約10mL','約100mL','約10L'], '唾液にはアミラーゼのほか、抗菌作用のある成分も含まれる。', 2],
+ ['手の爪が伸びる速さはおよそどれくらいか。', ['1日に約0.1mm','1日に約1mm','1日に約1cm','1か月に約0.1mm'], '1か月で約3mm。足の爪は手よりも伸びるのが遅い。', 2],
+ ['「鳥肌」が立つとき、毛の根元で収縮している筋肉はどれか。', ['立毛筋','横隔膜','心筋','表情筋'], '立毛筋は交感神経の支配を受ける平滑筋。毛の多い動物では毛を逆立てて保温や威嚇に役立つ。', 2],
+ ['ヒトの心臓は1日におよそ何回拍動するか。', ['約10万回','約1万回','約100万回','約1000回'], '1分間に約70回×60分×24時間で約10万回。', 2],
+ ['成人のヒトの脳の重さはおよそどれくらいか。', ['約1.3〜1.4kg','約300g','約5kg','約13kg'], '体重の約2％だが、からだ全体で使うエネルギーの約20％を消費する。', 1],
+ ['味覚の「基本味」に含まれないものはどれか。', ['辛味','うま味','苦味','塩味'], '基本味は甘味・酸味・塩味・苦味・うま味の5つ。辛味は痛みや熱さを感じる感覚に近い。うま味は池田菊苗が発見した。', 2],
+ ['ヒトの血液の量は体重のおよそどれくらいか。', ['約13分の1','約3分の1','約100分の1','約2分の1'], '体重60kgの人で約4.6L。', 2],
+ ['しゃっくりは、どの筋肉がけいれんするように収縮して起こるか。', ['横隔膜','心筋','腹筋','肋骨の間の筋肉だけ'], '横隔膜が急に縮んで息を吸い込み、声門が閉じて「ヒック」と音が出る。', 1],
+],
+zani: [
+ ['心臓を3つもつ動物はどれか。', ['タコ','カエル','ヘビ','クラゲ'], 'タコやイカは、えらに血液を送る2つのえら心臓と、全身に送る1つの心臓をもつ。', 1],
+ ['イカやタコの血液が青っぽく見えるのは、酸素を運ぶ色素に何が含まれるからか。', ['銅（ヘモシアニン）','鉄（ヘモグロビン）','マグネシウム','亜鉛'], 'ヘモシアニンは酸素と結合すると青色になる。', 2],
+ ['現在の地球上で最大の動物はどれか。', ['シロナガスクジラ','アフリカゾウ','マッコウクジラ','ジンベエザメ'], '体長は最大で約30m。過去の恐竜を含めても最大級とされる。', 1],
+ ['卵を産む哺乳類はどれか。', ['カモノハシ','コアラ','カンガルー','アルマジロ'], 'カモノハシやハリモグラは単孔類。卵を産むが、子は母乳で育てる。', 1],
+ ['クマムシが乾燥すると「乾眠」に入る。この状態の説明として正しいものはどれか。', ['代謝がほぼ止まり、極端な低温・高温や放射線にも耐える','体が分裂して数が増える','冬眠と同じで体温だけが下がる','水中でしか起こらない'], '水を与えると数十分ほどで活動を再開する。宇宙空間に置いても生き残った例がある。', 2],
+ ['アフリカゾウの妊娠期間はおよそどれくらいか。', ['約22か月','約10か月','約6か月','約5年'], '陸上の哺乳類で最も長い部類。', 2],
+ ['ニホンウナギの産卵場所と考えられている海域はどこか。', ['マリアナ諸島の西方海域','瀬戸内海','日本海','オホーツク海'], '2009年に天然のウナギの卵が初めて採集された。生まれた稚魚は海流に乗って日本へやってくる。', 2],
+ ['成体から幼い状態（ポリプ）に戻ることができ、「不老不死のクラゲ」と呼ばれるのはどれか。', ['ベニクラゲ','ミズクラゲ','エチゼンクラゲ','カツオノエボシ'], '傷ついたり弱ったりすると若返りが起こることがある。', 2],
+ ['鳥類で、空中に止まったまま羽ばたく「ホバリング」が得意で、後ろ向きにも飛べるのはどれか。', ['ハチドリ','ダチョウ','ペンギン','ハト'], '1秒間に数十回羽ばたく。体の大きさのわりにエネルギー消費がとても大きい。', 2],
+ ['アリやハチの仲間で、働きアリ（働きバチ）が自分では子を残さず女王の子育てを助ける社会を何というか。', ['真社会性','なわばり','群れ','共生'], '血縁度の高い姉妹を助けることで自分と共通の遺伝子を残せる（血縁選択）と説明される。', 3],
+ ['数百年生きると推定され、最も長生きの脊椎動物の一つとされるのはどれか。', ['ニシオンデンザメ','アフリカゾウ','ガラパゴスゾウガメ','シロナガスクジラ'], '眼の水晶体の年代測定から、約400年生きた個体がいると推定された。北極海の冷たい海でゆっくり成長する。', 3],
+ ['コウモリが暗闇で超音波を出し、はね返ってきた音で周りの物の位置を知るしくみを何というか。', ['反響定位（エコーロケーション）','太陽コンパス','磁気感覚','フェロモン'], 'イルカも同じしくみを使う。', 1],
+ ['キリンの首の骨（頸椎）の数はいくつか。', ['7個','14個','21個','3個'], 'ヒトと同じ7個。哺乳類のほとんどは首の長さに関係なく頸椎が7個で、1個1個が長い。', 1],
+ ['サケが生まれた川に戻ってくる（母川回帰）とき、川を見分けるのに主に使う感覚はどれか。', ['嗅覚','聴覚','視覚だけ','味覚'], '川ごとのにおいを稚魚のときに記憶すると考えられている。海での移動には地磁気なども使う。', 2],
+ ['カメレオンが体の色をすばやく変えるしくみとして、近年わかってきたものはどれか。', ['皮膚の細胞にある微小な結晶の間隔を変えて、反射する光の色を変える','血液の色を変える','皮膚の表面に色素を分泌する','体温を変えて色を変える'], '虹色素胞のナノ結晶の並びの間隔が変わると、反射する光の波長が変わる（構造色）。', 3],
+],
+zpla: [
+ ['1つの花として世界最大級で、直径約90cmにもなる花はどれか。', ['ラフレシア','ヒマワリ','ハス','ショクダイオオコンニャク'], 'ラフレシアは葉も根ももたない寄生植物。ショクダイオオコンニャクは小さな花の集まり（花序）が巨大になる。', 2],
+ ['竹（タケ）は植物分類上、何科に属するか。', ['イネ科','ヤシ科','マツ科','ブナ科'], 'タケは種によって数十年〜120年に一度しか花を咲かせないと言われる。', 1],
+ ['現在知られている中で最も背の高い樹木の種類はどれか。', ['センペルセコイア（セコイア）','スギ','バオバブ','ユーカリ・レグナンス'], 'アメリカのハイペリオンと名付けられた木は約116mある。', 2],
+ ['スーパーで売られているバナナに種がほとんどない主な理由はどれか。', ['栽培品種が三倍体で、正常な種子ができにくいから','種を取り除いてから出荷しているから','種が果肉にとけてしまうから','未熟なうちに収穫するから'], '三倍体では減数分裂がうまく進まない。そのため株分けで増やされ、品種内の遺伝的多様性が低い。', 2],
+ ['フレミングがアオカビから発見した、最初の抗生物質はどれか。', ['ペニシリン','ストレプトマイシン','インスリン','アスピリン'], 'ペニシリンは細菌の細胞壁の合成を妨げる。ヒトの細胞には細胞壁がないので影響しにくい。', 1],
+ ['納豆をつくる微生物はどれか。', ['納豆菌（枯草菌の仲間）','乳酸菌','麹菌','酵母'], '納豆のネバネバはおもにポリグルタミン酸。', 1],
+ ['ホタルの発光で、光を出す物質と、その反応を助ける酵素の組み合わせはどれか。', ['ルシフェリン－ルシフェラーゼ','クロロフィル－ルビスコ','ATP－アミラーゼ','GFP－DNAリガーゼ'], 'ルシフェリンがATPを使って酸化されるときに光る。熱をほとんど出さない「冷光」。', 2],
+ ['オジギソウに触れると葉が閉じる主なしくみはどれか。', ['葉のつけ根（葉枕）の細胞が水を失い膨圧が下がる','葉の筋肉が収縮する','葉の細胞が急に成長する','葉の気孔が閉じる'], '刺激が電気信号として伝わり、葉枕の細胞からイオンと水が出ていく。', 3],
+ ['ソメイヨシノの木の多くが同じ時期に一斉に咲く理由として最も適当なものはどれか。', ['接ぎ木などで増やされたクローンで、遺伝的にほぼ同じだから','すべて同じ年に種から育てたから','気温に関係なく決まった日に咲くから','ミツバチが同時に受粉させるから'], 'ソメイヨシノは自家不和合性が強く、ソメイヨシノどうしでは種子がほとんどできない。', 2],
+ ['ハエトリソウが葉を閉じて虫を捕まえる条件として正しいものはどれか。', ['葉の内側の感覚毛に短い時間で2回触れる','1回でも触れればすぐ閉じる','光が当たると閉じる','雨が降ると閉じる'], '1回だけでは閉じないことで、雨粒やごみによる無駄な開閉を防いでいると考えられている。', 2],
+ ['地球上でつくられる酸素の約半分をつくっているとされる生物はどれか。', ['海の植物プランクトン','熱帯雨林の樹木','草原の草','砂漠のサボテン'], '珪藻やシアノバクテリアなど海の小さな光合成生物が大きな役割をもつ。', 2],
+ ['1個体の広がりとして世界最大級の生物とされるものはどれか。', ['オニナラタケ（キノコの菌糸）','シロナガスクジラ','セコイアの木','ジャイアントケルプ'], 'アメリカのオレゴン州で、地下の菌糸が約9km²に広がる1個体が見つかっている。', 3],
+ ['ヒマワリの花の中心で種がらせん状に並ぶ列の数に現れることで知られる数の並びはどれか。', ['フィボナッチ数列','素数','円周率','等差数列'], '右回りと左回りのらせんの数が、34と55のように隣り合うフィボナッチ数になることが多い。', 2],
+ ['パン生地が酵母のはたらきでふくらむのは、主に何が発生するからか。', ['二酸化炭素','酸素','水素','窒素'], '酵母のアルコール発酵で二酸化炭素とエタノールができる。エタノールは焼くときに蒸発する。', 1],
+ ['ワサビの辛味成分はどれか。', ['アリルイソチオシアネート','カプサイシン','クエン酸','カテキン'], 'すりおろして細胞が壊れると、酵素の働きで辛味成分ができる。カプサイシンはトウガラシの辛味。', 2],
+],
+zpho: [], // 写真問題はページ上で作成し、共有データベースから読み込む
+};
+const QS = [], QMAP = {};
+for (const f of FIELDS) RAW[f.k].forEach((r, i) => {
+  const lv = r[3] || (LV[f.k] ? +LV[f.k][i] : 2) || 2;
+  const o = {id: f.k + (i + 1), f: f.k, g: f.g, lv, q: r[0], ch: r[1], ex: r[2]};
+  QS.push(o); QMAP[o.id] = o;
+});
+const CMAP = Object.fromEntries(COURSES.map(c => [c.k, c]));
+const FMAP = Object.fromEntries(FIELDS.map(f => [f.k, f]));
+
+</script>
+<script>
+/* ---------- 動作環境（claude.ai のページ／独立サイト） ---------- */
+const ENV = window.APP_ENV || 'artifact'; // 'artifact' | 'site' | 'site-offline'
+const SITE = ENV !== 'artifact';
+const TXT = {
+  noRoom: ENV === 'artifact' ? 'この画面では対戦機能につながりません。claude.aiにサインインした状態で開いてください。'
+    : ENV === 'site' ? '対戦サーバーにつながりません。通信環境を確認するか、少し待ってからもう一度試してください。'
+    : '対戦機能はまだ設定されていません。サイトの管理者がFirebaseを設定すると使えるようになります。',
+  noPhoto: ENV === 'artifact' ? '写真問題は、claude.aiにサインインしてこのページを開くと表示されます。' : '写真問題を読み込めませんでした。通信環境を確認してください。',
+  entry: ENV === 'artifact' ? '対戦はclaude.aiにサインインしてこのページを開いた人どうしで遊べます。対戦で答えた問題も「記録」に反映されます。'
+    : 'このページを開いた人どうしで、登録なしで遊べます。対戦で答えた問題も「記録」に反映されます。',
+  sync: on => SITE ? 'このブラウザに保存しています' : on ? 'あなたのアカウントに保存しています（他の端末でも同じ記録）' : 'この端末のブラウザに保存しています'
+};
+const blobSrc = id => window.BLOB ? window.BLOB.src(id) : '/_blob/' + id;
+const $ = s => document.querySelector(s);
+const view = $('#view');
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const use = n => (window.claude && typeof window.claude.use === 'function') ? window.claude.use(n).catch(() => null) : Promise.resolve(null);
+const LS = {
+  get(k, d){ try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch(e){ return d; } },
+  set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
+};
+const MK = ['①','②','③','④'];
+function rng(seed){ let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+function hash(s){ let h = 2166136261; for (let i = 0; i < s.length; i++){ h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+function shuffle(arr, r = Math.random){ const a = arr.slice(); for (let i = a.length - 1; i > 0; i--){ const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+const pct = (c, t) => t ? Math.round(c / t * 100) : null;
+
+/* ---------- 記録 ---------- */
+let ST = LS.get('bio-stats', {q:{}});
+if (!ST || typeof ST.q !== 'object') ST = {q:{}};
+function normST(){
+  if (!ST.f || typeof ST.f !== 'object') ST.f = {}; // 各問題の「初めて解いたときの結果」 1=正解 0=不正解
+  for (const [k, s] of Object.entries(ST.q)) if (!(k in ST.f) && Array.isArray(s) && s[1] === 1) ST.f[k] = s[0] ? 1 : 0;
+}
+normST();
+let dbDoc = null, saving = false, dirty = false, saveTimer = null, synced = false;
+function record(id, ok){
+  if (!QMAP[id]) return;
+  const s = ST.q[id] || [0, 0, 0];
+  ST.q[id] = [s[0] + (ok ? 1 : 0), s[1] + 1, ok ? 0 : 1]; // [正解数, 回答数, 直近が不正解なら1]
+  if (!(id in ST.f)) { ST.f[id] = ok ? 1 : 0; AG.dirty = true; }
+  LS.set('bio-stats', ST); queueSave();
+}
+function queueSave(){ dirty = true; clearTimeout(saveTimer); saveTimer = setTimeout(flush, 1500); }
+async function flush(){
+  if (!dbDoc || saving || !dirty) return;
+  saving = true; dirty = false;
+  try { await dbDoc.set({q: ST.q, f: ST.f, aggKey: AG.key, at: Date.now()}); } catch(e){ dirty = true; }
+  saving = false;
+  if (dirty) { clearTimeout(saveTimer); saveTimer = setTimeout(flush, 5000); }
+  flushAgg();
+}
+
+/* ---------- みんなの正答率から難易度を自動判定 ---------- */
+// 各人は、ランダムな匿名キーの文書 agg/<キー> に「初回の正誤」だけを書く。名前やアカウントIDは載せない。
+// 全員の文書を合計し、AUTO_MIN人以上が解いた問題は初回正答率で難易度を付け直す。
+const AUTO_MIN = 5, AUTO_HI = 0.8, AUTO_LO = 0.5;
+const AG = {key: null, doc: null, dirty: false, saving: false, stats: {}, people: 0};
+const newKey = () => Array.from(crypto.getRandomValues(new Uint8Array(12)), b => b.toString(16).padStart(2, '0')).join('');
+async function flushAgg(){
+  if (!AG.doc || AG.saving || !AG.dirty) return;
+  AG.saving = true; AG.dirty = false;
+  try { await AG.doc.set({f: ST.f, at: Date.now()}); } catch(e){ AG.dirty = true; }
+  AG.saving = false;
+}
+function setAgg(docs){
+  const st = {}; let people = 0;
+  for (const d of docs){
+    const f = (d.data() || {}).f; if (!f || typeof f !== 'object') continue;
+    let any = false;
+    for (const [id, v] of Object.entries(f)){
+      if (!QMAP[id] && !id.startsWith('p_')) continue;
+      if (v !== 0 && v !== 1) continue;
+      const s = st[id] || (st[id] = {n: 0, k: 0}); s.n++; s.k += v; any = true;
+    }
+    if (any) people++;
+  }
+  AG.stats = st; AG.people = people;
+  applyAuto(); rerenderIdle();
+}
+function applyAuto(){
+  for (const q of QS){
+    if (q.lv0 == null) q.lv0 = q.lv;
+    const s = AG.stats[q.id];
+    if (q.lv0 === 4) { q.lv = 4; q.auto = false; continue; }
+    if (s && s.n >= AUTO_MIN){ const p = s.k / s.n; q.lv = p >= AUTO_HI ? 1 : p >= AUTO_LO ? 2 : 3; q.auto = true; }
+    else { q.lv = q.lv0; q.auto = false; }
+  }
+}
+function crowdLine(q){
+  const s = AG.stats[q.id]; if (!s || !s.n) return '';
+  return `<small class="crowd">みんなの初回正答率 ${Math.round(s.k / s.n * 100)}%（${s.n}人）${q.auto ? '・難易度はこの正答率で判定' : ''}</small>`;
+}
+
+(async () => {
+  const [db, user, assets] = await Promise.all([use('db'), use('user'), use('assets')]);
+  PH.assets = assets;
+  if (db){
+    PH.db = db;
+    try { db.collection('photoq').onSnapshot(s => setPhotoQs(s.docs), () => {}); } catch(e){}
+    try { db.collection('agg').onSnapshot(s => setAgg(s.docs), () => {}); } catch(e){}
+  }
+  if (!db || !user) { rerenderIdle(); return; }
+  let id = null; try { id = await user.id(); } catch(e){}
+  PH.me = id;
+  if (!id) { rerenderIdle(); return; }
+  try {
+    dbDoc = db.collection('data/users/' + id).doc('stats');
+    const snap = await dbDoc.get();
+    const body = snap.exists ? (snap.data() || {}) : {};
+    const remote = body.q || {};
+    let changed = false;
+    for (const [k, v] of Object.entries(remote)){
+      if (!Array.isArray(v)) continue;
+      const l = ST.q[k];
+      if (!l || v[1] > l[1]) ST.q[k] = v.slice();
+      else if (l[1] > v[1]) changed = true;
+    }
+    for (const k of Object.keys(ST.q)) if (!remote[k]) changed = true;
+    const rf = body.f && typeof body.f === 'object' ? body.f : {};
+    for (const [k, v] of Object.entries(rf)) if (!(k in ST.f) && (v === 0 || v === 1)) ST.f[k] = v;
+    for (const k of Object.keys(ST.f)) if (!(k in rf)) changed = true;
+    normST();
+    AG.key = typeof body.aggKey === 'string' && /^[0-9a-f]{24}$/.test(body.aggKey) ? body.aggKey : newKey();
+    if (AG.key !== body.aggKey) changed = true;
+    AG.doc = db.collection('agg').doc(AG.key);
+    AG.dirty = Object.keys(ST.f).length > 0;
+    LS.set('bio-stats', ST); synced = true;
+    if (changed) queueSave(); else flushAgg();
+  } catch(e){ dbDoc = null; }
+  rerenderIdle();
+})();
+function rerenderIdle(){ // 入力中の画面は描き直さない
+  if (tab === 'practice' && !Z && !PH.form) renderSetup();
+  else if (tab === 'stats') renderStats();
+  else if (tab === 'battle' && (!B.role || (B.g && B.g.ph === 'lobby'))) renderBattle();
+}
+
+/* ---------- 写真問題 ---------- */
+const PH = {db: null, assets: null, me: null, form: null, busy: false, err: '', del: null};
+const ASSET_RE = /^[0-9a-f]{32}$/;
+const clip = (s, n) => String(s ?? '').trim().slice(0, n);
+function setPhotoQs(docs){
+  for (let i = QS.length - 1; i >= 0; i--) if (QS[i].f === 'zpho'){ delete QMAP[QS[i].id]; QS.splice(i, 1); }
+  const rows = docs.map(d => [d, d.data() || {}]).sort((a, b) => (a[1].at || 0) - (b[1].at || 0));
+  for (const [d, x] of rows){
+    const ch = Array.isArray(x.ch) ? x.ch.map(c => clip(c, 60)) : [];
+    if (!ASSET_RE.test(String(x.img)) || ch.length !== 4 || ch.some(c => !c)) continue;
+    const o = {id: 'p_' + d.id, f: 'zpho', g: 'zatsu', lv: [1,2,3].includes(x.lv) ? x.lv : 2, q: clip(x.q, 120) || 'この生き物の名前は？', ch, ex: clip(x.ex, 400), img: x.img, doc: d.id, by: x.by || null};
+    QS.push(o); QMAP[o.id] = o;
+  }
+  applyAuto(); rerenderIdle();
+}
+const imgHTML = q => q.img && ASSET_RE.test(q.img) ? `<figure class="qimg"><img src="${blobSrc(q.img)}" data-blob="${q.img}" alt="問題の写真" loading="eager"></figure>` : '';
+async function shrink(file){
+  try {
+    const bmp = await createImageBitmap(file);
+    const s = Math.min(1, 1280 / Math.max(bmp.width, bmp.height));
+    const c = document.createElement('canvas'); c.width = Math.round(bmp.width * s); c.height = Math.round(bmp.height * s);
+    c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+    return await new Promise(r => c.toBlob(b => r(b || file), 'image/jpeg', 0.85));
+  } catch(e){ return file; }
+}
+function photoUI(){
+  const list = QS.filter(q => q.f === 'zpho');
+  if (!PH.db) return `<section class="card sect"><h2>写真で当てる</h2><p class="note">${TXT.noPhoto}</p></section>`;
+  if (PH.form){
+    const f = PH.form;
+    return `<section class="card sect" id="phForm">
+      <h2>写真問題を作る</h2>
+      <label class="drop" for="phFile">${f.url ? `<img src="${f.url}" alt="選んだ写真">` : '<span>写真を選ぶ・撮る</span>'}</label>
+      <input type="file" id="phFile" accept="image/*" hidden>
+      <div class="field"><label for="phQ">問題文</label><input type="text" id="phQ" maxlength="120" value="${esc(f.q)}"></div>
+      <div class="field"><label for="phA">正解</label><input type="text" id="phA" maxlength="60" value="${esc(f.a)}" placeholder="例：ツユクサ"></div>
+      <div class="field"><label>まちがいの選択肢（3つ）</label>
+        ${[0,1,2].map(i => `<input type="text" id="phW${i}" maxlength="60" value="${esc(f.w[i])}" placeholder="${['例：アサガオ','例：オオイヌノフグリ','例：ムラサキツユクサ'][i]}">`).join('')}</div>
+      <div class="field"><label for="phE">解説（なくてもよい）</label><textarea id="phE" maxlength="400" rows="3" placeholder="見分けるポイントや豆知識">${esc(f.ex)}</textarea></div>
+      <div class="field"><label>難易度</label><div class="seg" id="phLv">${[1,2,3].map(v => `<button data-plv="${v}" aria-pressed="${f.lv === v}">${LVN[v]}</button>`).join('')}</div></div>
+      ${PH.err ? `<p class="err">${esc(PH.err)}</p>` : ''}
+      <button class="primary" id="phSave" ${PH.busy ? 'disabled' : ''}>${PH.busy ? '保存しています…' : '問題を保存'}</button>
+      <button class="ghost" id="phCancel">やめる</button>
+    </section>`;
+  }
+  return `<section class="card sect">
+    <h2>写真で当てる（${list.length}問）</h2>
+    ${list.length ? `<ul class="phlist">${list.map(q => `<li><img src="${blobSrc(q.img)}" data-blob="${q.img}" alt=""><div><b>${esc(q.ch[0])}</b><small>${LVN[q.lv]}・${esc(q.q)}</small></div>
+      ${PH.assets ? (PH.del === q.doc ? `<span class="confirm"><button class="danger" data-pdel="${q.doc}">消す</button><button data-pno="1">戻る</button></span>` : `<button class="ghost" data-pask="${q.doc}">削除</button>`) : ''}</li>`).join('')}</ul>`
+      : `<p class="note">まだ写真問題はありません。${PH.assets ? '撮った植物や生き物の写真から問題を作れます。' : ''}</p>`}
+    ${PH.assets ? `<button class="secondary" id="phNew">＋ 写真問題を作る</button><p class="note">作った問題はこのページを開ける全員の練習と対戦に出ます。人の顔や個人情報が写った写真は使わないでください。</p>` : ''}
+  </section>`;
+}
+function bindPhoto(rerender){
+  const n = $('#phNew'); if (n) n.onclick = () => { PH.form = {file: null, url: '', q: 'この植物の名前は？', a: '', w: ['', '', ''], ex: '', lv: 2}; PH.err = ''; rerender(); };
+  view.querySelectorAll('[data-pask]').forEach(b => b.onclick = () => { PH.del = b.dataset.pask; rerender(); });
+  view.querySelectorAll('[data-pno]').forEach(b => b.onclick = () => { PH.del = null; rerender(); });
+  view.querySelectorAll('[data-pdel]').forEach(b => b.onclick = async () => {
+    const q = QS.find(x => x.doc === b.dataset.pdel); PH.del = null;
+    try { await PH.db.collection('photoq').doc(b.dataset.pdel).delete(); } catch(e){ PH.err = '削除できませんでした'; }
+    if (q && PH.assets) { try { await PH.assets.delete(q.img); } catch(e){} }
+    rerender();
+  });
+  if (!PH.form) return;
+  const f = PH.form;
+  const sync = () => { f.q = $('#phQ').value; f.a = $('#phA').value; f.w = [0,1,2].map(i => $('#phW' + i).value); f.ex = $('#phE').value; };
+  view.querySelectorAll('#phForm input[type=text], #phForm textarea').forEach(el => el.oninput = sync);
+  $('#phFile').onchange = e => { const file = e.target.files && e.target.files[0]; if (!file) return; sync(); if (f.url) URL.revokeObjectURL(f.url); f.file = file; f.url = URL.createObjectURL(file); rerender(); };
+  view.querySelectorAll('[data-plv]').forEach(b => b.onclick = () => { sync(); f.lv = +b.dataset.plv; rerender(); });
+  $('#phCancel').onclick = () => { if (f.url) URL.revokeObjectURL(f.url); PH.form = null; PH.err = ''; rerender(); };
+  $('#phSave').onclick = async () => {
+    sync();
+    const ch = [f.a, ...f.w].map(s => clip(s, 60));
+    if (!f.file) PH.err = '写真を選んでください';
+    else if (ch.some(c => !c)) PH.err = '正解と、まちがいの選択肢3つをすべて入力してください';
+    else if (new Set(ch).size !== 4) PH.err = '選択肢が重なっています。4つとも別の名前にしてください';
+    else PH.err = '';
+    if (PH.err) return rerender();
+    PH.busy = true; rerender();
+    try {
+      const blob = await shrink(f.file);
+      const up = await PH.assets.upload(blob, {type: blob.type || 'image/jpeg'});
+      await PH.db.collection('photoq').add({img: up.id, q: clip(f.q, 120) || 'この植物の名前は？', ch, ex: clip(f.ex, 400), lv: f.lv, by: PH.me, at: Date.now()});
+      if (f.url) URL.revokeObjectURL(f.url);
+      PH.form = null;
+    } catch(e){
+      const c = e && e.code;
+      PH.err = c === 'too_large' ? '写真が大きすぎます。別の写真を選んでください'
+        : c === 'unsupported_type' ? 'この形式の画像は使えません。JPEGかPNGの写真を選んでください'
+        : '保存できませんでした（' + (c || 'error') + '）。少し待ってもう一度試してください';
+    }
+    PH.busy = false; rerender();
+  };
+}
+function fieldStats(k){
+  const qs = QS.filter(q => q.f === k);
+  let c = 0, t = 0, seen = 0, mastered = 0;
+  for (const q of qs){ const s = ST.q[q.id]; if (s && s[1]){ c += s[0]; t += s[1]; seen++; if (!s[2]) mastered++; } }
+  return {n: qs.length, c, t, seen, mastered};
+}
+
+/* ---------- タブ ---------- */
+let tab = 'practice';
+document.querySelectorAll('.tabs button').forEach(b => b.addEventListener('click', () => {
+  tab = b.dataset.tab;
+  document.querySelectorAll('.tabs button').forEach(x => x.setAttribute('aria-selected', x === b));
+  render();
+}));
+function render(){
+  if (tab === 'practice') return Z ? renderQuiz() : renderSetup();
+  if (tab === 'stats') return renderStats();
+  if (tab === 'battle') return renderBattle();
+}
+
+/* ---------- 練習：設定 ---------- */
+const LVN = {1:'基礎', 2:'標準', 3:'発展', 4:'鬼'};
+const stars = lv => lv >= 4 ? '<span class="oni">鬼</span>' : '★'.repeat(lv) + '<span class="off">' + '★'.repeat(3 - lv) + '</span>';
+const LEVELS = () => ONI.on ? [1,2,3,4] : [1,2,3];
+/* ---------- 裏コマンド：鬼モード ---------- */
+// タイトル「一問一答」を2.5秒以内に5回タップすると、難関大レベルの「鬼」問題が出るようになる
+const ONI = {on: !!LS.get('bio-oni', false), all: QS.filter(q => q.lv === 4), taps: []};
+function syncOniQs(){
+  for (let i = QS.length - 1; i >= 0; i--) if (QS[i].lv0 === 4 || (QS[i].lv === 4 && QS[i].lv0 == null)) QS.splice(i, 1);
+  if (ONI.on) QS.push(...ONI.all);
+}
+function toast(msg, cls){
+  const el = document.createElement('div'); el.className = 'toast ' + (cls || ''); el.textContent = msg;
+  document.body.appendChild(el); setTimeout(() => el.classList.add('out'), 2200); setTimeout(() => el.remove(), 2700);
+}
+function setOni(on){
+  ONI.on = on; LS.set('bio-oni', on); syncOniQs();
+  for (const S of [P, H.set]){ if (on && !S.lv.includes(4)) S.lv = [...S.lv, 4]; if (!on) { S.lv = S.lv.filter(v => v !== 4); if (!S.lv.length) S.lv = [1,2,3]; } }
+  saveP(); saveH();
+  document.documentElement.classList.toggle('oni-mode', on);
+  toast(on ? '鬼モード解放　難関大レベルの問題が' + ONI.all.length + '問出るようになりました' : '鬼モードを閉じました', on ? 'oni' : '');
+  rerenderIdle();
+}
+$('.brand h1 b').addEventListener('click', () => {
+  const now = Date.now(); ONI.taps = ONI.taps.filter(x => now - x < 2500); ONI.taps.push(now);
+  if (ONI.taps.length >= 5){ ONI.taps = []; setOni(!ONI.on); }
+});
+for (const q of ONI.all) q.lv0 = 4;
+syncOniQs();
+document.documentElement.classList.toggle('oni-mode', ONI.on);
+
+const ALLF = FIELDS.map(f => f.k);
+function normSel(S){
+  S.fields = (Array.isArray(S.fields) ? S.fields : ALLF).filter(k => FMAP[k]);
+  for (const f of FIELDS) if (!(S.known || []).includes(f.k) && !S.fields.includes(f.k)) S.fields.push(f.k); // 新しく増えた分野は選択済みに
+  S.known = ALLF.slice();
+  if (!CMAP[S.course]) S.course = 'exam';
+  S.lv = (Array.isArray(S.lv) ? S.lv : [1,2,3]).filter(v => [1,2,3,4].includes(v));
+  if (!S.lv.some(v => LEVELS().includes(v))) S.lv = [1,2,3];
+}
+const P = Object.assign({fields: ALLF, n: 10, order: 'rand', course: 'exam', lv: [1,2,3]}, LS.get('bio-practice', {}));
+normSel(P);
+const saveP = () => LS.set('bio-practice', P);
+function poolFor(S){ return QS.filter(q => q.g === S.course && S.fields.includes(q.f) && S.lv.includes(q.lv)); }
+// 編・難易度・分野の選択UI（練習と対戦で共通）
+function selUI(S, withStats){
+  const fs = FIELDS.filter(f => f.g === S.course);
+  return `<section class="sect">
+      <div class="course" role="tablist">${COURSES.map(c => `<button data-course="${c.k}" aria-selected="${S.course === c.k}">${esc(c.n)}<small>${QS.filter(q => q.g === c.k).length}問</small></button>`).join('')}</div>
+      <p class="note">${esc(CMAP[S.course].d)}</p>
+    </section>
+    <section class="sect">
+      <h2>分野</h2>
+      <div class="fields">${fs.map(f => { const s = fieldStats(f.k); const p = pct(s.c, s.t);
+        return `<button class="fchip" data-f="${f.k}" aria-pressed="${S.fields.includes(f.k)}"><b>${esc(f.n)}</b><small>${esc(f.c)}・${s.n}問${withStats ? `・正答率 ${p == null ? '—' : p + '%'}` : ''}</small></button>`; }).join('')}</div>
+      <div class="linkrow"><button class="link" data-all="1">すべて選ぶ</button><button class="link" data-all="0">選択を解除</button></div>
+    </section>
+    <section class="sect">
+      <h2>難易度</h2>
+      <div class="seg lvseg">${LEVELS().map(v => `<button data-lv="${v}" class="${v === 4 ? 'lv-oni' : ''}" aria-pressed="${S.lv.includes(v)}"><span class="st">${stars(v)}</span>${LVN[v]}<small>${QS.filter(q => q.g === S.course && q.lv === v).length}問</small></button>`).join('')}</div>
+    </section>`;
+}
+function bindSel(S, save, rerender){
+  view.querySelectorAll('[data-course]').forEach(b => b.onclick = () => { S.course = b.dataset.course; save(); rerender(); });
+  view.querySelectorAll('.fchip').forEach(b => b.onclick = () => { const k = b.dataset.f; S.fields = S.fields.includes(k) ? S.fields.filter(x => x !== k) : [...S.fields, k]; save(); rerender(); });
+  view.querySelectorAll('[data-all]').forEach(b => b.onclick = () => {
+    const ks = FIELDS.filter(f => f.g === S.course).map(f => f.k);
+    S.fields = b.dataset.all === '1' ? [...new Set([...S.fields, ...ks])] : S.fields.filter(k => !ks.includes(k)); save(); rerender(); });
+  view.querySelectorAll('[data-lv]').forEach(b => b.onclick = () => { const v = +b.dataset.lv;
+    if (S.lv.includes(v)) { if (S.lv.filter(x => LEVELS().includes(x)).length > 1) S.lv = S.lv.filter(x => x !== v); } else S.lv = [...S.lv, v].sort(); save(); rerender(); });
+}
+function renderSetup(){
+  const pool = poolFor(P);
+  const n = P.n === 0 ? pool.length : Math.min(P.n, pool.length);
+  view.innerHTML = `<div class="stack">
+    ${selUI(P, true)}
+    ${P.course === 'zatsu' ? photoUI() : ''}
+    <section class="sect">
+      <h2>問題数</h2>
+      <div class="seg" id="segN">${[[10,'10問'],[20,'20問'],[0,'すべて']].map(([v,l]) => `<button data-v="${v}" aria-pressed="${P.n === v}">${l}</button>`).join('')}</div>
+    </section>
+    <section class="sect">
+      <h2>出題のしかた</h2>
+      <div class="seg" id="segO">${[['rand','ランダム'],['weak','苦手な問題から'],['new','まだ解いていない問題から']].map(([v,l]) => `<button data-v="${v}" aria-pressed="${P.order === v}">${l}</button>`).join('')}</div>
+    </section>
+    <button class="primary" id="start" ${pool.length ? '' : 'disabled'}>${pool.length ? `${n}問に挑戦する` : '分野を選んでください'}</button>
+  </div>`;
+  bindSel(P, saveP, renderSetup);
+  bindPhoto(renderSetup);
+  view.querySelectorAll('#segN button').forEach(b => b.onclick = () => { P.n = +b.dataset.v; saveP(); renderSetup(); });
+  view.querySelectorAll('#segO button').forEach(b => b.onclick = () => { P.order = b.dataset.v; saveP(); renderSetup(); });
+  $('#start').onclick = () => startQuiz(pickQuestions(pool, n));
+}
+function pickQuestions(pool, n){
+  let list = shuffle(pool);
+  if (P.order === 'weak'){
+    const key = q => { const s = ST.q[q.id]; if (!s || !s[1]) return 0.55; return s[0] / s[1] - (s[2] ? 0.3 : 0); };
+    list = list.map(q => [q, key(q) + Math.random() * 0.05]).sort((a, b) => a[1] - b[1]).map(x => x[0]);
+  } else if (P.order === 'new'){
+    const seen = q => (ST.q[q.id] && ST.q[q.id][1]) ? 1 : 0;
+    list = list.map(q => [q, seen(q)]).sort((a, b) => a[1] - b[1]).map(x => x[0]);
+  }
+  return shuffle(list.slice(0, n));
+}
+
+/* ---------- 練習：出題 ---------- */
+let Z = null; // {list, i, perm, picked, results:[]}
+function startQuiz(qs){ Z = {list: qs.map(q => q.id), i: 0, perm: shuffle([0,1,2,3]), picked: null, results: []}; window.scrollTo(0, 0); renderQuiz(); }
+function choiceButtons(q, perm, picked, reveal){
+  return perm.map((ci, pos) => {
+    let cls = '';
+    if (reveal){ if (ci === 0) cls = 'ok'; else if (ci === picked) cls = 'ng'; else cls = 'dim'; }
+    else if (picked === ci) cls = 'picked';
+    return `<button class="ch ${cls}" data-c="${ci}" ${reveal || picked != null ? 'disabled' : ''}><span class="mk">${MK[pos]}</span><span>${esc(q.ch[ci])}</span></button>`;
+  }).join('');
+}
+function renderQuiz(){
+  if (Z.i >= Z.list.length) return renderResult();
+  const q = QMAP[Z.list[Z.i]], f = FMAP[q.f], done = Z.picked != null;
+  view.innerHTML = `<div class="stack">
+    <div class="sect">
+      <div class="qhead"><span class="tag">${esc(f.n)}<span class="st">${stars(q.lv)}</span></span><span class="num">${Z.i + 1} / ${Z.list.length}</span></div>
+      <div class="bar"><i style="width:${(Z.i + (done ? 1 : 0)) / Z.list.length * 100}%"></i></div>
+    </div>
+    ${imgHTML(q)}
+    <p class="qtext">${esc(q.q)}</p>
+    <div class="choices">${choiceButtons(q, Z.perm, Z.picked, done)}</div>
+    ${done ? `<div class="exp ${Z.picked === 0 ? 'ok' : 'ng'}"><b>${Z.picked === 0 ? '正解' : '不正解　正解は ' + MK[Z.perm.indexOf(0)]}</b><span>${esc(q.ex)}</span>${crowdLine(q)}</div>
+      <button class="primary" id="next">${Z.i + 1 < Z.list.length ? '次の問題へ' : '結果を見る'}</button>` : ''}
+    <button class="ghost" id="quit">練習をやめる</button>
+  </div>`;
+  view.querySelectorAll('.ch').forEach(b => b.onclick = () => {
+    if (Z.picked != null) return;
+    Z.picked = +b.dataset.c; const ok = Z.picked === 0;
+    record(q.id, ok); Z.results.push({id: q.id, ok, picked: Z.picked});
+    renderQuiz();
+    const n = $('#next'); if (n) n.scrollIntoView({block: 'nearest', behavior: 'smooth'});
+  });
+  if (done) $('#next').onclick = () => { Z.i++; Z.picked = null; Z.perm = shuffle([0,1,2,3]); window.scrollTo(0, 0); renderQuiz(); };
+  $('#quit').onclick = () => { Z.results.length ? (Z.list = Z.list.slice(0, Z.results.length), Z.i = Z.list.length, renderQuiz()) : (Z = null, renderSetup()); };
+}
+function renderResult(){
+  const ok = Z.results.filter(r => r.ok).length, n = Z.results.length;
+  const wrong = Z.results.filter(r => !r.ok);
+  view.innerHTML = `<div class="stack">
+    <div class="card sect">
+      <h2>結果</h2>
+      <div class="big">${ok}<small>/ ${n}問 正解（${pct(ok, n) ?? 0}%）</small></div>
+    </div>
+    ${wrong.length ? `<div class="card wrong"><h2>間違えた問題</h2><ul>${wrong.map(r => { const q = QMAP[r.id];
+      return `<li>${q.img ? `<img class="thumb" src="${blobSrc(q.img)}" data-blob="${q.img}" alt="">` : ''}<div>${esc(q.q)}</div><div class="ans">正解：${esc(q.ch[0])}</div><div class="note">${esc(q.ex)}</div></li>`; }).join('')}</ul></div>` : `<p class="note">全問正解です。</p>`}
+    ${wrong.length ? `<button class="primary" id="retry">間違えた${wrong.length}問をもう一度</button>` : ''}
+    <button class="secondary" id="back">設定にもどる</button>
+  </div>`;
+  if (wrong.length) $('#retry').onclick = () => startQuiz(shuffle(wrong.map(r => QMAP[r.id])));
+  $('#back').onclick = () => { Z = null; window.scrollTo(0, 0); renderSetup(); };
+}
+
+/* ---------- 記録 ---------- */
+let confirmReset = false;
+function renderStats(){
+  let c = 0, t = 0, seen = 0;
+  for (const q of QS){ const s = ST.q[q.id]; if (s && s[1]){ c += s[0]; t += s[1]; seen++; } }
+  const weak = QS.map(q => [q, ST.q[q.id]]).filter(([, s]) => s && s[1] && s[0] < s[1])
+    .sort((a, b) => (a[1][0] / a[1][1]) - (b[1][0] / b[1][1]) || b[1][1] - a[1][1]).slice(0, 8);
+  view.innerHTML = `<div class="stack">
+    <div class="kpis">
+      <div class="kpi"><b>${pct(c, t) == null ? '—' : pct(c, t) + '%'}</b><span>全体の正答率</span></div>
+      <div class="kpi"><b>${t}</b><span>のべ回答数</span></div>
+      <div class="kpi"><b>${seen}<small style="font-size:.8rem;color:var(--muted)">/${QS.length}</small></b><span>解いた問題</span></div>
+    </div>
+    <section class="card sect">
+      <h2>難易度別の正答率</h2>
+      <p class="note">難易度は、${AUTO_MIN}人以上が解いた問題では「みんなの初回正答率」で自動判定します（${AUTO_HI * 100}%以上＝基礎、${AUTO_LO * 100}〜${AUTO_HI * 100}%＝標準、${AUTO_LO * 100}%未満＝発展）。それより少ない問題は作成時の難易度です。いま自動判定 ${QS.filter(q => q.auto).length}問／集計に参加 ${AG.people}人。</p>
+      <div class="lvkpi" style="grid-template-columns:repeat(${LEVELS().length},1fr)">${LEVELS().map(v => { let c2 = 0, t2 = 0; for (const q of QS) if (q.lv === v){ const s = ST.q[q.id]; if (s){ c2 += s[0]; t2 += s[1]; } } const p = pct(c2, t2);
+        return `<div><span class="st">${stars(v)}</span><b class="${p != null && p < 60 ? 'low' : ''}">${p == null ? '—' : p + '%'}</b><span>${LVN[v]}・のべ${t2}回</span></div>`; }).join('')}</div>
+    </section>
+    ${COURSES.map(cs => `<section class="card sect">
+      <h2>${esc(cs.n)}・分野別の正答率</h2>
+      <div>${FIELDS.filter(f => f.g === cs.k).map(f => { const s = fieldStats(f.k); const p = pct(s.c, s.t);
+        return `<div class="frow"><div class="nm">${esc(f.n)}<small>${esc(f.c)}</small></div><div class="pc ${p != null && p < 60 ? 'low' : ''}">${p == null ? '—' : p + '%'}</div>
+        <div class="meter" title="直近で正解した問題／解いた問題"><i class="a" style="width:${s.n ? s.mastered / s.n * 100 : 0}%"></i><i class="b" style="width:${s.n ? (s.seen - s.mastered) / s.n * 100 : 0}%"></i></div>
+        <div class="sub">解いた問題 ${s.seen}/${s.n}・直近で正解 ${s.mastered}問・のべ ${s.t}回</div></div>`; }).join('')}</div>
+    </section>`).join('')}
+    <p class="note">バーの濃い部分は直近の回答で正解した問題、薄い部分は直近で間違えた問題です。</p>
+    <section class="card sect">
+      <h2>苦手な問題</h2>
+      ${weak.length ? `<div class="wrong"><ul>${weak.map(([q, s]) => `<li><div>${esc(q.q)}</div><div class="note">${esc(FMAP[q.f].n)}・${s[0]}/${s[1]}回正解</div></li>`).join('')}</ul></div>
+        <button class="primary" id="drill">この${weak.length}問を練習する</button>` : `<p class="note">間違えた問題はまだありません。練習すると、ここに苦手な問題が並びます。</p>`}
+    </section>
+    <div class="sect">
+      <div class="sync ${dbDoc && !SITE ? 'on' : ''}">${TXT.sync(!!dbDoc)}</div>
+      ${SITE && PH.me ? `<p class="note">管理者設定用のID：<code style="user-select:all;font-family:var(--f-num)">${esc(PH.me)}</code></p>` : ''}
+      ${confirmReset ? `<div class="confirm"><span>記録をすべて消しますか？</span><button class="danger" id="rsYes">消す</button><button id="rsNo">やめる</button></div>`
+        : `<div><button class="ghost" id="rs" style="padding-left:0">記録をリセット</button></div>`}
+    </div>
+  </div>`;
+  if (weak.length) $('#drill').onclick = () => { tab = 'practice'; syncTabs(); startQuiz(shuffle(weak.map(w => w[0]))); };
+  if (confirmReset){ $('#rsYes').onclick = () => { ST = {q:{}, f: ST.f}; LS.set('bio-stats', ST); queueSave(); confirmReset = false; renderStats(); }; $('#rsNo').onclick = () => { confirmReset = false; renderStats(); }; }
+  else $('#rs').onclick = () => { confirmReset = true; renderStats(); };
+}
+function syncTabs(){ document.querySelectorAll('.tabs button').forEach(x => x.setAttribute('aria-selected', x.dataset.tab === tab)); }
+
+/* ---------- 対戦 ---------- */
+// 仕組み：名前付きルーム「bio-番号」に入り、ホストが自分のpresenceに試合状態を載せる。参加者は自分のpresenceに回答を載せる。
+const B = {room: undefined, rm: null, role: null, code: '', name: LS.get('bio-name', ''), g: null, myKey: null, myAns: null, localStart: 0, recorded: new Set(), err: '', busy: false, hostSeen: false, joinedAt: 0, unsub: null};
+const H = {set: Object.assign({fields: ALLF, course: 'exam', lv: [1,2,3], n: 10, lim: 15}, LS.get('bio-battle', {})), qids: [], qStart: 0, ans: new Map(), timer: null};
+if (Array.isArray(H.set.f)) { H.set.fields = H.set.f; delete H.set.f; }
+normSel(H.set);
+const saveH = () => LS.set('bio-battle', H.set);
+const cleanName = s => { let o = ''; for (const ch of String(s ?? '')) { const c = ch.codePointAt(0); if (c < 32 || (c >= 127 && c < 160) || (c >= 0x200b && c <= 0x200f) || (c >= 0x2028 && c <= 0x202e) || (c >= 0x2060 && c <= 0x206f) || c === 0xfeff) continue; o += ch; } o = o.trim(); return [...o].slice(0, 12).join('') || '名無し'; };
+const myPeer = () => { const me = B.rm && B.rm.peers().find(p => p.sameTab); return me ? me.peer : 'me'; };
+const curKey = () => B.g ? B.g.ep + '.' + B.g.i : '';
+const BONUS = [5, 3, 1];
+
+async function ensureRoom(){ if (B.room === undefined) B.room = await use('room'); return B.room; }
+function needName(){ const v = cleanName($('#bName') && $('#bName').value); if (!$('#bName').value.trim()){ B.err = '名前を入力してください'; renderBattle(); return null; } B.name = v; LS.set('bio-name', v); return v; }
+async function createRoom(){
+  if (!needName()) return;
+  B.busy = true; B.err = ''; renderBattle();
+  const room = await ensureRoom();
+  if (!room){ B.busy = false; B.err = TXT.noRoom; return renderBattle(); }
+  const code = String(1000 + Math.floor(Math.random() * 9000));
+  try { B.rm = await room.join('bio-' + code); } catch(e){ B.busy = false; B.err = '部屋を作れませんでした（' + (e && e.code || 'error') + '）。少し待ってもう一度試してください。'; return renderBattle(); }
+  B.role = 'h'; B.code = code; B.busy = false;
+  B.g = {ep: 0, ph: 'lobby', i: 0, n: H.set.n, lim: H.set.lim, q: null, sd: 0, ac: 0, np: 1, sc: {}, res: null};
+  B.unsub = B.rm.onPeers(hostPeers);
+  pushHost(); renderBattle();
+}
+async function joinRoom(){
+  if (!needName()) return;
+  const code = ($('#bCode').value || '').replace(/\D/g, '');
+  if (!/^\d{4}$/.test(code)){ B.err = '4けたの部屋番号を入力してください'; return renderBattle(); }
+  B.busy = true; B.err = ''; renderBattle();
+  const room = await ensureRoom();
+  if (!room){ B.busy = false; B.err = TXT.noRoom; return renderBattle(); }
+  try { B.rm = await room.join('bio-' + code); } catch(e){ B.busy = false; B.err = '部屋に入れませんでした（' + (e && e.code || 'error') + '）'; return renderBattle(); }
+  B.role = 'p'; B.code = code; B.busy = false; B.g = null; B.hostSeen = false; B.joinedAt = Date.now();
+  B.rm.presence({r: 'p', n: B.name}).catch(() => {});
+  B.unsub = B.rm.onPeers(playerPeers);
+  setTimeout(() => { if (B.role === 'p' && !B.hostSeen) renderBattle(); }, 4000);
+  renderBattle();
+}
+async function leaveRoom(){
+  clearInterval(H.timer);
+  try { B.unsub && B.unsub(); } catch(e){}
+  try { B.rm && await B.rm.leave(); } catch(e){}
+  Object.assign(B, {rm: null, role: null, code: '', g: null, myKey: null, myAns: null, err: '', unsub: null});
+  renderBattle();
+}
+function pushHost(){ if (B.rm) B.rm.presence({r: 'h', n: B.name, g: B.g}).catch(e => { B.err = '通信エラー：' + (e && e.code || ''); }); }
+function roomPlayers(){ // ホスト以外の、いまルームにいる参加者
+  return B.rm ? B.rm.peers().filter(p => !p.sameTab && p.presence && p.presence.r === 'p') : [];
+}
+function activeCount(){ return 1 + roomPlayers().length; }
+
+// --- ホスト側
+function hostPeers(){
+  if (B.role !== 'h') return;
+  const g = B.g; let changed = false;
+  const me = myPeer();
+  if (me !== 'me' && g.sc.me) { delete g.sc.me; changed = true; }
+  if (!g.sc[me]) { g.sc[me] = [B.name, 0]; changed = true; }
+  for (const p of roomPlayers()){
+    const pr = p.presence, nm = cleanName(pr.n);
+    if (!g.sc[p.peer]) { g.sc[p.peer] = [nm, 0]; changed = true; }
+    else if (g.sc[p.peer][0] !== nm) { g.sc[p.peer][0] = nm; changed = true; }
+    if (g.ph === 'q' && pr.a && pr.a.k === curKey() && !H.ans.has(p.peer)){
+      const c = Number(pr.a.c);
+      if (Number.isInteger(c) && c >= 0 && c < 4){ H.ans.set(p.peer, {c, ms: Date.now() - H.qStart}); changed = true; }
+    }
+  }
+  // 参加者が多すぎるときは記録を絞る（presenceの容量対策）
+  const keys = Object.keys(g.sc); if (keys.length > 30) for (const k of keys.slice(0, keys.length - 30)) delete g.sc[k];
+  if (g.ph === 'q'){
+    const np = activeCount();
+    if (g.ac !== H.ans.size || g.np !== np){ g.ac = H.ans.size; g.np = np; changed = true; }
+    if (H.ans.size >= np) return reveal();
+  }
+  if (changed) pushHost();
+  if (tab === 'battle') renderBattle();
+}
+function startGame(){
+  const pool = poolFor(H.set);
+  if (!pool.length) return;
+  H.qids = shuffle(pool).slice(0, Math.min(H.set.n, pool.length)).map(q => q.id);
+  const g = B.g;
+  g.ep = 1 + Math.floor(Math.random() * 1e9); g.n = H.qids.length; g.lim = H.set.lim;
+  for (const k of Object.keys(g.sc)) g.sc[k][1] = 0;
+  const live = new Set([myPeer(), ...roomPlayers().map(p => p.peer)]);
+  for (const k of Object.keys(g.sc)) if (!live.has(k)) delete g.sc[k];
+  nextQ(0);
+}
+function nextQ(i){
+  const g = B.g;
+  Object.assign(g, {ph: 'q', i, q: H.qids[i], sd: Math.floor(Math.random() * 1e9), ac: 0, np: activeCount(), res: null});
+  H.ans.clear(); H.qStart = Date.now(); B.myAns = null; B.myKey = curKey(); B.localStart = H.qStart;
+  pushHost();
+  clearInterval(H.timer);
+  H.timer = setInterval(() => { if (B.g && B.g.ph === 'q' && Date.now() - H.qStart > B.g.lim * 1000 + 600) reveal(); }, 250);
+  window.scrollTo(0, 0); renderBattle();
+}
+function hostAnswer(c){
+  if (B.g.ph !== 'q' || B.myAns != null) return;
+  const me = myPeer(); B.myAns = c;
+  H.ans.set(me, {c, ms: Date.now() - H.qStart});
+  B.g.ac = H.ans.size;
+  if (H.ans.size >= activeCount()) return reveal();
+  pushHost(); renderBattle();
+}
+function reveal(){
+  clearInterval(H.timer);
+  const g = B.g; if (g.ph !== 'q') return;
+  const entries = [...H.ans.entries()].map(([peer, a]) => ({peer, c: a.c, ms: a.ms}));
+  const correct = entries.filter(e => e.c === 0).sort((a, b) => a.ms - b.ms);
+  correct.forEach((e, r) => e.pts = 10 + (BONUS[r] || 0));
+  entries.filter(e => e.c !== 0).forEach(e => e.pts = 0);
+  for (const e of entries) if (g.sc[e.peer]) g.sc[e.peer][1] += e.pts;
+  const live = [myPeer(), ...roomPlayers().map(p => p.peer)];
+  const none = live.filter(p => !H.ans.has(p)).map(peer => ({peer, c: -1, ms: 0, pts: 0}));
+  const wrong = entries.filter(e => e.c !== 0).sort((a, b) => a.ms - b.ms);
+  g.res = [...correct, ...wrong, ...none].slice(0, 24).map(e => [e.peer, g.sc[e.peer] ? g.sc[e.peer][0] : '？', e.c, e.ms, e.pts]);
+  g.ph = 'rev';
+  if (B.myAns != null && !B.recorded.has(curKey())){ B.recorded.add(curKey()); record(g.q, B.myAns === 0); }
+  pushHost(); renderBattle();
+}
+function hostNext(){ const g = B.g; if (g.i + 1 < g.n) nextQ(g.i + 1); else { g.ph = 'end'; pushHost(); renderBattle(); } }
+function hostLobby(){ Object.assign(B.g, {ph: 'lobby', res: null, q: null}); pushHost(); renderBattle(); }
+
+// --- 参加者側
+function playerPeers(){
+  if (B.role !== 'p') return;
+  const h = B.rm.peers().find(p => !p.sameTab && p.presence && p.presence.r === 'h');
+  const g = h && h.presence.g && typeof h.presence.g === 'object' ? h.presence.g : null;
+  if (h) B.hostSeen = true;
+  B.hostName = h ? cleanName(h.presence.n) : '';
+  if (g){
+    const k = g.ep + '.' + g.i;
+    if (g.ph === 'q' && B.myKey !== k){ B.myKey = k; B.myAns = null; B.localStart = Date.now(); if (tab === 'battle') window.scrollTo(0, 0); }
+    if (g.ph === 'rev' && B.myKey === k && B.myAns != null && !B.recorded.has(k) && QMAP[g.q]){ B.recorded.add(k); record(g.q, B.myAns === 0); }
+  }
+  B.g = g;
+  if (tab === 'battle') renderBattle();
+}
+function playerAnswer(c){
+  if (!B.g || B.g.ph !== 'q' || B.myAns != null) return;
+  if (Date.now() - B.localStart > B.g.lim * 1000) return;
+  B.myAns = c;
+  B.rm.presence({a: {k: B.myKey, c}}).catch(() => {});
+  renderBattle();
+}
+
+// --- 対戦画面
+setInterval(() => {
+  const bar = $('#tbar'); if (!bar || !B.g || B.g.ph !== 'q') return;
+  const start = B.role === 'h' ? H.qStart : B.localStart;
+  const left = Math.max(0, B.g.lim * 1000 - (Date.now() - start));
+  bar.style.width = (left / (B.g.lim * 1000) * 100) + '%';
+  const tl = $('#tleft'); if (tl) tl.textContent = Math.ceil(left / 1000) + '秒';
+  if (left <= 0 && B.role === 'p' && B.myAns == null){ const w = $('#bwait'); if (w) w.textContent = '時間切れ。答え合わせを待っています'; view.querySelectorAll('.ch').forEach(b => b.disabled = true); }
+}, 200);
+
+function peopleList(){
+  if (!B.rm) return '';
+  const ps = B.rm.peers().filter(p => p.presence && (p.presence.r === 'h' || p.presence.r === 'p'));
+  ps.sort((a, b) => (a.presence.r === 'h' ? -1 : 0) - (b.presence.r === 'h' ? -1 : 0));
+  return `<ul class="players">${ps.map(p => `<li class="${p.presence.r === 'h' ? 'host' : ''}">${esc(cleanName(p.presence.n))}${p.presence.r === 'h' ? '<em>ホスト</em>' : ''}${p.sameTab ? '<em>あなた</em>' : ''}</li>`).join('')}</ul>`;
+}
+function scoreboard(g, title){
+  const me = myPeer();
+  const rows = Object.entries(g.sc || {}).map(([peer, v]) => ({peer, name: v[0], pts: v[1]})).sort((a, b) => b.pts - a.pts);
+  let pos = 0, last = null;
+  return `<section class="card sect"><h2>${title}</h2><ol class="rank">${rows.map((r, i) => { if (r.pts !== last){ pos = i + 1; last = r.pts; }
+    return `<li class="${r.peer === me ? 'me' : ''}"><span class="pos">${pos}</span><span class="who">${esc(cleanName(r.name))}</span><span></span><span class="pt">${r.pts}点</span></li>`; }).join('')}</ol></section>`;
+}
+function renderBattle(){
+  if (!B.role) return renderBattleEntry();
+  const g = B.g, isHost = B.role === 'h';
+  const head = `<div class="codebox"><span>部屋番号</span><b>${esc(B.code)}</b></div>`;
+  const leave = `<button class="ghost" id="bLeave">部屋から出る</button>`;
+  let body = '';
+  if (!g){
+    const late = Date.now() - B.joinedAt > 3500;
+    body = `<p class="waiting">${late ? 'ホストが見つかりません。部屋番号が合っているか、ホストが部屋を開いたままか確認してください。' : 'ホストにつないでいます…'}</p>`;
+  } else if (g.ph === 'lobby'){
+    if (isHost){
+      const pool = poolFor(H.set).length;
+      body = `<section class="sect"><h2>参加者（${activeCount()}人）</h2>${peopleList()}<p class="note">友だちに部屋番号を伝えて、このページの「対戦」から参加してもらいます。</p></section>
+      ${selUI(H.set, false)}
+      <section class="sect"><h2>問題数</h2><div class="seg" id="hN">${[5,10,15,20].map(v => `<button data-v="${v}" aria-pressed="${H.set.n === v}">${v}問</button>`).join('')}</div></section>
+      <section class="sect"><h2>制限時間（1問）</h2><div class="seg" id="hL">${[10,15,20,30].map(v => `<button data-v="${v}" aria-pressed="${H.set.lim === v}">${v}秒</button>`).join('')}</div></section>
+      <p class="note">得点：正解 10点＋早押しボーナス（1着 +5、2着 +3、3着 +1）。不正解・時間切れは0点。</p>
+      <button class="primary" id="hStart" ${pool ? '' : 'disabled'}>対戦スタート</button>`;
+    } else {
+      body = `<section class="sect"><h2>参加者</h2>${peopleList()}</section><p class="waiting">${esc(B.hostName || 'ホスト')}さんが始めるのを待っています</p>`;
+    }
+  } else if ((g.ph === 'q' || g.ph === 'rev') && QMAP[g.q]){
+    const q = QMAP[g.q], perm = shuffle([0,1,2,3], rng((g.sd ^ hash(g.q)) >>> 0));
+    const rev = g.ph === 'rev';
+    const myPick = (B.myKey === curKeyOf(g)) ? B.myAns : null;
+    body = `<div class="sect"><div class="qhead"><span class="tag">${esc(FMAP[q.f].n)}<span class="st">${stars(q.lv)}</span></span><span class="num">第${g.i + 1}問 / ${g.n}${rev ? '' : '　<span id="tleft"></span>'}</span></div>
+      ${rev ? '' : '<div class="bar timer"><i id="tbar" style="width:100%"></i></div>'}</div>
+      ${imgHTML(q)}
+      <p class="qtext">${esc(q.q)}</p>
+      <div class="choices">${choiceButtons(q, perm, myPick, rev)}</div>`;
+    if (!rev){
+      body += `<p class="waiting" id="bwait">${myPick != null ? `回答しました。ほかの人を待っています（${g.ac}/${g.np}人）` : `${g.ac}/${g.np}人が回答済み`}</p>`;
+    } else {
+      const me = myPeer();
+      body += `<div class="exp ${myPick === 0 ? 'ok' : 'ng'}"><b>${myPick === 0 ? '正解' : myPick == null ? '時間切れ' : '不正解'}　正解は ${MK[perm.indexOf(0)]}</b><span>${esc(q.ex)}</span>${crowdLine(q)}</div>
+      <section class="card sect"><h2>この問題の順位</h2><ol class="rank">${(g.res || []).map((r, i) => `<li class="${r[0] === me ? 'me' : ''}"><span class="pos">${r[2] === 0 ? i + 1 : '–'}</span><span class="who"><span class="mark ${r[2] === 0 ? 'o' : 'x'}">${r[2] === 0 ? '○' : r[2] < 0 ? '—' : '×'}</span>${esc(cleanName(r[1]))}</span><span class="t">${r[2] >= 0 ? (r[3] / 1000).toFixed(2) + '秒' : ''}</span><span class="pt">+${r[4]}</span></li>`).join('')}</ol></section>
+      ${scoreboard(g, '現在の得点')}
+      ${isHost ? `<button class="primary" id="hNext">${g.i + 1 < g.n ? '次の問題へ' : '結果発表'}</button>` : `<p class="waiting">ホストが次へ進むのを待っています</p>`}`;
+    }
+  } else if (g.ph === 'end'){
+    const rows = Object.values(g.sc || {}).sort((a, b) => b[1] - a[1]);
+    const top = rows[0];
+    body = `<div class="card sect podium"><h2>優勝</h2><div class="big">${esc(top ? cleanName(top[0]) : '—')}</div><p class="note">${top ? top[1] + '点' : ''}</p></div>
+      ${scoreboard(g, '最終結果')}
+      ${isHost ? `<button class="primary" id="hLobby">もう一度あそぶ</button>` : `<p class="waiting">ホストが次の対戦を準備するのを待っています</p>`}`;
+  } else {
+    body = `<p class="waiting">読み込み中…</p>`;
+  }
+  view.innerHTML = `<div class="stack">${head}${B.err ? `<p class="err">${esc(B.err)}</p>` : ''}${body}${leave}</div>`;
+  $('#bLeave').onclick = leaveRoom;
+  view.querySelectorAll('.ch').forEach(b => b.onclick = () => (isHost ? hostAnswer : playerAnswer)(+b.dataset.c));
+  if (isHost){
+    if (g && g.ph === 'lobby') bindSel(H.set, saveH, renderBattle);
+    view.querySelectorAll('#hN button').forEach(b => b.onclick = () => { H.set.n = +b.dataset.v; saveH(); renderBattle(); });
+    view.querySelectorAll('#hL button').forEach(b => b.onclick = () => { H.set.lim = +b.dataset.v; saveH(); renderBattle(); });
+    const s = $('#hStart'); if (s) s.onclick = startGame;
+    const n = $('#hNext'); if (n) n.onclick = hostNext;
+    const l = $('#hLobby'); if (l) l.onclick = hostLobby;
+  }
+}
+const curKeyOf = g => g.ep + '.' + g.i;
+function renderBattleEntry(){
+  view.innerHTML = `<div class="stack">
+    <div class="card sect">
+      <h2>早押し対戦</h2>
+      <p class="note" style="font-size:.88rem;color:var(--ink)">同じ問題に全員で同時に答え、正解の早さを競います。1人が部屋を作り、ほかの人は4けたの部屋番号で参加します。</p>
+    </div>
+    <div class="field"><label for="bName">あなたの名前（12文字まで）</label><input type="text" id="bName" maxlength="12" value="${esc(B.name)}" placeholder="例：まさや" autocomplete="nickname"></div>
+    ${B.err ? `<p class="err">${esc(B.err)}</p>` : ''}
+    <button class="primary" id="bCreate" ${B.busy ? 'disabled' : ''}>部屋を作る（ホストになる）</button>
+    <div class="or">または</div>
+    <div class="field"><label for="bCode">部屋番号で参加</label>
+      <div class="joinrow"><input id="bCode" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="4けたの番号"><button id="bJoin" ${B.busy ? 'disabled' : ''}>参加</button></div></div>
+    <p class="note">${TXT.entry}</p>
+  </div>`;
+  $('#bCreate').onclick = createRoom;
+  $('#bJoin').onclick = joinRoom;
+  $('#bCode').addEventListener('keydown', e => { if (e.key === 'Enter') joinRoom(); });
+}
+
+render();
+</script>
+
+</body>
+</html>
